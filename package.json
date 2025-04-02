@@ -24,6 +24,7 @@
     "mongoose": "^8.13.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "vite-jsconfig-paths": "^2.0.1"
   }
 }
