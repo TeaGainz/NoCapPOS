@@ -1,0 +1,139 @@
+.sidebar {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 141px;
+    height: 1080px;
+    position: relative;
+    width: 1920px;
+  }
+  
+  .sidebar .group {
+    background-image: url(./subtract.png);
+    background-size: 100% 100%;
+    height: 1080px;
+    position: relative;
+    width: 1920px;
+  }
+  
+  .sidebar .overlap-group-wrapper {
+    height: 145px;
+    left: 50px;
+    position: absolute;
+    top: 100px;
+    width: 162px;
+  }
+  
+  .sidebar .overlap-group {
+    -webkit-backdrop-filter: blur(7.7px) brightness(100%);
+    backdrop-filter: blur(7.7px) brightness(100%);
+    background-color: #6b8cb282;
+    border-bottom-style: solid;
+    border-bottom-width: 9px;
+    border-color: #5351f5;
+    border-radius: 10px;
+    height: 163px;
+    left: -9px;
+    position: relative;
+    top: -9px;
+    width: 178px;
+  }
+  
+  .sidebar .text-wrapper {
+    color: #ffffff;
+    font-family: "Inter-Bold", Helvetica;
+    font-size: 20px;
+    font-weight: 700;
+    left: 29px;
+    letter-spacing: 0;
+    line-height: normal;
+    position: absolute;
+    top: 109px;
+    white-space: nowrap;
+  }
+  
+  .sidebar .home {
+    height: 78px;
+    left: 42px;
+    position: absolute;
+    top: 16px;
+    width: 76px;
+  }
+  
+  .sidebar .overlap-wrapper {
+    height: 145px;
+    left: 50px;
+    position: absolute;
+    top: 345px;
+    width: 162px;
+  }
+  
+  .sidebar .checkout {
+    height: 78px;
+    left: 35px;
+    position: absolute;
+    top: 23px;
+    width: 78px;
+  }
+  
+  .sidebar .div {
+    color: #ffffff;
+    font-family: "Inter-Bold", Helvetica;
+    font-size: 20px;
+    font-weight: 700;
+    left: 35px;
+    letter-spacing: 0;
+    line-height: normal;
+    position: absolute;
+    top: 108px;
+    white-space: nowrap;
+  }
+  
+  .sidebar .div-wrapper {
+    height: 145px;
+    left: 50px;
+    position: absolute;
+    top: 590px;
+    width: 162px;
+  }
+  
+  .sidebar .box {
+    height: 78px;
+    left: 41px;
+    object-fit: cover;
+    position: absolute;
+    top: 21px;
+    width: 78px;
+  }
+  
+  .sidebar .group-2 {
+    height: 145px;
+    left: 50px;
+    position: absolute;
+    top: 835px;
+    width: 162px;
+  }
+  
+  .sidebar .transaction-history {
+    color: #ffffff;
+    font-family: "Inter-Bold", Helvetica;
+    font-size: 20px;
+    font-weight: 700;
+    left: 12px;
+    letter-spacing: 0;
+    line-height: normal;
+    position: absolute;
+    text-align: center;
+    top: 90px;
+    width: 135px;
+  }
+  
+  .sidebar .clipboard {
+    height: 67px;
+    left: 51px;
+    object-fit: cover;
+    position: absolute;
+    top: 15px;
+    width: 67px;
+  }
+  
