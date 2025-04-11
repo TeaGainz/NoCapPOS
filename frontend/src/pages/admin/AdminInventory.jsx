@@ -2,7 +2,9 @@ import React from 'react'
 
 const AdminInventory = () => {
   return (
-    <div>AdminInventory</div>
+    <div className="px-6 py-8 ">
+      <div className="text-6xl font-bold">Inventory</div>
+    </div>
   )
 }
 

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const AdminSidebar = () => {
   return (
-    <div className="bg-[#5351F5] h-screen w-[257px] flex flex-col justify-center items-center gap-y-20">
+    <div className="bg-[#323366] h-screen w-[257px] flex flex-col justify-center items-center gap-y-20">
       <Link to="/dashboard">
         <SidebarButton
           label={"Dashboard"}
