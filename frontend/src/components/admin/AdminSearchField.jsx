@@ -1,13 +1,14 @@
 import React from "react";
 import { Search } from "lucide-react";
 
-const AdminSearchField = () => {
+const AdminSearchField = ({ onSearch }) => {
   return (
-    <div className="flex items-center border border-gray-300 rounded-md px-4 w-[525px] h-[71px] bg-white">
+    <div className="flex items-center border border-gray-300 rounded-md px-4 w-[425px] h-[60px] bg-white">
       <input
         type="text"
         placeholder="Search..."
         className="ml-3 flex-1 outline-none text-lg text-gray-700 bg-transparent"
+        onChange={(e) => onSearch(e.target.value)} // Call onSearch when input changes
       />
       <button
         type="button"
