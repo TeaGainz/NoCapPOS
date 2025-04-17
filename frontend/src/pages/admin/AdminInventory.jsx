@@ -152,7 +152,7 @@ const AdminInventory = () => {
                 className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-lg hidden"
               >
                 <button
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
                   onClick={() => handleSort("name")}
                 >
                   Name
@@ -164,7 +164,7 @@ const AdminInventory = () => {
                     ))}
                 </button>
                 <button
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
                   onClick={() => handleSort("price")}
                 >
                   Price
@@ -176,7 +176,7 @@ const AdminInventory = () => {
                     ))}
                 </button>
                 <button
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
                   onClick={() => handleSort("quantity")}
                 >
                   Quantity

@@ -198,15 +198,21 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
           {/* Product Category */}
           <div>
             <label className="block font-bold mb-1">Category:</label>
-            <input
-              type="text"
+            <select
               name="category"
-              placeholder="Enter category"
               value={formData.category}
               onChange={handleChange}
               className="border p-2 rounded w-full"
               required
-            />
+            >
+              <option value="" disabled>
+                Select a category
+              </option>
+              <option value="Keyboard">Keyboard</option>
+              <option value="Keycaps">Keycaps</option>
+              <option value="Switches">Switches</option>
+              <option value="Others">Others</option>
+            </select>
           </div>
 
           {/* Product Description */}
