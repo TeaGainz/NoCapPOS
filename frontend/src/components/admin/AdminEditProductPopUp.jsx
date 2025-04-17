@@ -112,7 +112,18 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
 
                 // Validate the URL format
                 const isValidImageUrl = (url) => {
-                  return /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(url);
+                  try {
+                    // Create a URL object to validate the structure
+                    const parsedUrl = new URL(url);
+
+                    // Extract the file extension from the URL (ignoring query parameters)
+                    const urlWithoutQuery = parsedUrl.pathname;
+                    return /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(
+                      urlWithoutQuery
+                    );
+                  } catch {
+                    return false; // Invalid URL structure
+                  }
                 };
 
                 if (name === "imageLink" && value && !isValidImageUrl(value)) {

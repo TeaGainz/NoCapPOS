@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import AdminAddProductPopUp from "../../components/admin/AdminAddProductPopUp";
 import AdminEditProductPopUp from "../../components/admin/AdminEditProductPopUp";
 import AdminSearchField from "../../components/admin/AdminSearchField";
@@ -54,7 +54,9 @@ const AdminInventory = () => {
   const handleSort = (option) => {
     // Toggle sorting direction if the same option is clicked
     if (sortOption === option) {
-      setSortDirection((prevDirection) => (prevDirection === "asc" ? "desc" : "asc"));
+      setSortDirection((prevDirection) =>
+        prevDirection === "asc" ? "desc" : "asc"
+      );
     } else {
       setSortOption(option);
       setSortDirection("asc"); // Default to ascending when a new option is selected
@@ -68,7 +70,9 @@ const AdminInventory = () => {
       } else if (option === "price") {
         return sortDirection === "asc" ? a.price - b.price : b.price - a.price;
       } else if (option === "quantity") {
-        return sortDirection === "asc" ? a.quantity - b.quantity : b.quantity - a.quantity;
+        return sortDirection === "asc"
+          ? a.quantity - b.quantity
+          : b.quantity - a.quantity;
       }
       return 0;
     });
@@ -93,6 +97,36 @@ const AdminInventory = () => {
     );
   };
 
+  // Handle product deletion
+  const handleDeleteProduct = async (id) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/products/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        const data = await response.json();
+        if (data.success) {
+          alert("Product deleted successfully!");
+          setProducts((prevProducts) =>
+            prevProducts.filter((product) => product._id !== id)
+          );
+          setFilteredProducts((prevProducts) =>
+            prevProducts.filter((product) => product._id !== id)
+          );
+        } else {
+          alert("Failed to delete product: " + data.message);
+        }
+      } catch (error) {
+        console.error("Error deleting product:", error);
+        alert("An error occurred while deleting the product.");
+      }
+    }
+  };
+
   return (
     <div className="px-15 py-5">
       <div className="bg-[#BFC8E5] w-[1540px] h-[880px] flex flex-col gap-y-5 pt-4 rounded-xl">
@@ -105,7 +139,11 @@ const AdminInventory = () => {
             <div className="relative">
               <button
                 className="flex items-center bg-white border border-gray-300 rounded-md px-4 py-2 text-gray-700 hover:bg-gray-100"
-                onClick={() => document.getElementById("sortDropdown").classList.toggle("hidden")}
+                onClick={() =>
+                  document
+                    .getElementById("sortDropdown")
+                    .classList.toggle("hidden")
+                }
               >
                 Sort By <ChevronDown className="ml-2 w-4 h-4" />
               </button>
@@ -176,17 +214,29 @@ const AdminInventory = () => {
                   />
                   <div>
                     <div className="font-bold text-lg">{product.name}</div>
-                    <div className="text-gray-500">₱{product.price.toFixed(2)}</div>
+                    <div className="text-gray-500">
+                      ₱{product.price.toFixed(2)}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-x-4">
+                  {/* Fixed width for the Edit button */}
                   <button
                     onClick={() => setEditProduct(product)}
-                    className="bg-blue-100 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-200"
+                    className="bg-blue-100 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-200 w-[70px] text-center"
                   >
                     Edit
                   </button>
-                  <div className="font-bold text-gray-700">{product.quantity} in Stock</div>
+                  {/* Fixed width for the stock amount */}
+                  <div className="font-bold text-gray-700 text-center w-[100px]">
+                    {product.quantity} in Stock
+                  </div>
+                  <button
+                    onClick={() => handleDeleteProduct(product._id)}
+                    className="bg-red-100 text-red-500 px-4 py-2 rounded-lg hover:bg-red-200 flex items-center"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
             ))

@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const AdminSidebar = () => {
   return (
     <div className="bg-[#323366] h-screen w-[257px] flex flex-col justify-center items-center gap-y-20">
-      <Link to="/dashboard">
+      <Link to="/">
         <SidebarButton
           label={"Dashboard"}
           icon={<House color="white" width={76} height={78} />}

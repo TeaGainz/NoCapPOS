@@ -15,7 +15,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route element={<AdminLayout />}>
-        <Route index path="/dashboard" element={<AdminDashboard />} />
+        <Route index path="/" element={<AdminDashboard />} />
         <Route path="/inventory" element={<AdminInventory />} />
         <Route path="/checkout" element={<AdminCheckout />} />
         <Route path="/transaction-history" element={<AdminTransactionHistory />} />
