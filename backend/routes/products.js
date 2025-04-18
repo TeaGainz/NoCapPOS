@@ -6,6 +6,7 @@ import {
   getProducts,
   updateProduct,
 } from "../controllers/product.js";
+import { updateProductSales } from "../controllers/product.js";
 
 const router = express.Router();
 
@@ -20,5 +21,7 @@ router.get("/:id", getProductById);
 router.put("/:id", updateProduct);
 
 router.delete("/:id", deleteProduct);
+
+router.patch("/:id/sales", updateProductSales);
 
 export default router;

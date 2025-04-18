@@ -1,11 +1,14 @@
 import React from "react";
 
-
-const SidebarButton = ({label, icon}) => {
+const SidebarButton = ({ label, icon, isOpen }) => {
   return (
-    <button className="bg-[#6B8CB2]/50 h-[145px] w-[160px] hover:bg-[#6B8CB2]/70 cursor-pointer rounded-xl flex flex-col justify-center items-center">
+    <button
+      className={`bg-[#6B8CB2]/50 ${
+        isOpen ? "w-[160px] h-[145px]" : "w-[60px] h-[45px]"
+      } hover:bg-[#6B8CB2]/70 cursor-pointer rounded-lg flex flex-col items-center justify-center gap-y-2 transition-all duration-300`}
+    >
       {icon}
-      <div className="text-white font-bold ">{label}</div>
+      {isOpen && <div className="text-white font-bold text-sm">{label}</div>}
     </button>
   );
 };

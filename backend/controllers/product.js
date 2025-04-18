@@ -129,3 +129,33 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export const updateProductSales = async (req, res) => {
+  const { id } = req.params;
+  const { sold } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid product ID" });
+  }
+
+  try {
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    // Increment the sold field
+    product.sold += sold;
+
+    const updatedProduct = await product.save();
+    res.status(200).json({ success: true, data: updatedProduct });
+  } catch (error) {
+    console.error("Error updating product sales:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};

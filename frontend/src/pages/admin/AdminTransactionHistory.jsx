@@ -1,22 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const AdminTransactionHistory = () => {
-  const transactions = [
-    {
-      date: "Dec. 2, 2024",
-      time: "12:01",
-      invoiceNo: "012345678910",
-      status: "Paid",
-      amount: 1173.6,
-    },
-    {
-      date: "Dec. 2, 2024",
-      time: "12:01",
-      invoiceNo: "012345678911",
-      status: "Expired",
-      amount: 1173.6,
-    },
-  ];
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/transactions");
+        const data = await response.json();
+        if (data.success) {
+          setTransactions(data.data);
+        } else {
+          console.error("Failed to fetch transactions:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
   return (
     <div className="px-15 py-5">
@@ -31,14 +34,14 @@ const AdminTransactionHistory = () => {
                 <th className="px-4 py-2">Date & Time</th>
                 <th className="px-4 py-2">Invoice No.</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Amount</th>
+                <th className="px-4 py-2">Total Amount</th>
               </tr>
             </thead>
             <tbody>
               {transactions.map((transaction, index) => (
                 <tr key={index} className="border-b">
                   <td className="px-4 py-2">
-                    {transaction.date} {transaction.time}
+                    {new Date(transaction.date).toLocaleString()}
                   </td>
                   <td className="px-4 py-2">{transaction.invoiceNo}</td>
                   <td className="px-4 py-2">
@@ -52,7 +55,7 @@ const AdminTransactionHistory = () => {
                       {transaction.status}
                     </span>
                   </td>
-                  <td className="px-4 py-2">₱{transaction.amount.toFixed(2)}</td>
+                  <td className="px-4 py-2">₱{transaction.totalAmount.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
