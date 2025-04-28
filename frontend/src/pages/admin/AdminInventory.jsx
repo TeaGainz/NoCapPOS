@@ -98,34 +98,49 @@ const AdminInventory = () => {
   };
 
   // Handle product deletion
-  const handleDeleteProduct = async (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/products/${id}`,
-          {
-            method: "DELETE",
-          }
-        );
+const handleDeleteProduct = async (id, category) => {
+  if (window.confirm("Are you sure you want to delete this product?")) {
+    try {
+      // Map categories to their respective endpoints
+      const categoryEndpointMap = {
+        products: "products",
+        keyboard: "Keyboard", // Ensure this matches the actual category value
+        switches: "switches",
+        keycaps: "keycaps",
+        others: "others",
+      };
 
-        const data = await response.json();
-        if (data.success) {
-          alert("Product deleted successfully!");
-          setProducts((prevProducts) =>
-            prevProducts.filter((product) => product._id !== id)
-          );
-          setFilteredProducts((prevProducts) =>
-            prevProducts.filter((product) => product._id !== id)
-          );
-        } else {
-          alert("Failed to delete product: " + data.message);
-        }
-      } catch (error) {
-        console.error("Error deleting product:", error);
-        alert("An error occurred while deleting the product.");
+      const endpoint = categoryEndpointMap[category.toLowerCase()];
+      if (!endpoint) {
+        alert("Invalid category. Unable to delete product.");
+        return;
       }
+
+      const response = await fetch(
+        `http://localhost:5000/api/${endpoint}/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        alert("Product deleted successfully!");
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product._id !== id)
+        );
+        setFilteredProducts((prevProducts) =>
+          prevProducts.filter((product) => product._id !== id)
+        );
+      } else {
+        alert("Failed to delete product: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert("An error occurred while deleting the product.");
     }
-  };
+  }
+};
 
   return (
     <div className="px-15 py-5">
@@ -232,7 +247,9 @@ const AdminInventory = () => {
                     {product.quantity} in Stock
                   </div>
                   <button
-                    onClick={() => handleDeleteProduct(product._id)}
+                    onClick={() =>
+                      handleDeleteProduct(product._id, product.category)
+                    }
                     className="bg-red-100 text-red-500 px-4 py-2 rounded-lg hover:bg-red-200 flex items-center"
                   >
                     <Trash2 className="w-5 h-5" />

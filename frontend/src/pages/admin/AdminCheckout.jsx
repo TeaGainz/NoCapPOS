@@ -6,7 +6,8 @@ const AdminCheckout = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [cart, setCart] = useState([]);
-  const [taxRate, setTaxRate] = useState(0.0); // Default tax rate is 10%
+  const [taxRate, setTaxRate] = useState(""); //tax value
+  const [rawTaxRate, setRawTaxRate] = useState(""); // Temporary state for raw input
 
   // Fetch products from the API
   useEffect(() => {
@@ -216,8 +217,17 @@ const AdminCheckout = () => {
             <label className="block text-lg font-bold mb-2">Tax Rate (%)</label>
             <input
               type="number"
-              value={taxRate * 100}
-              onChange={(e) => setTaxRate(e.target.value / 100)} // Update tax rate
+              value={rawTaxRate} // Use rawTaxRate for the input value
+              onChange={(e) => {
+                const value = e.target.value;
+                setRawTaxRate(value); // Update raw input value
+                const parsedValue = parseFloat(value);
+                if (!isNaN(parsedValue)) {
+                  setTaxRate(parseFloat((parsedValue / 100).toFixed(2))); // Update taxRate only when valid
+                } else {
+                  setTaxRate(0); // Reset taxRate if input is invalid
+                }
+              }}
               className="border rounded-lg p-2 w-full"
             />
           </div>
