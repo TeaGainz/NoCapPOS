@@ -5,46 +5,73 @@ import AdminEditProductPopUp from "../../components/admin/AdminEditProductPopUp"
 import AdminSearchField from "../../components/admin/AdminSearchField";
 
 const AdminInventory = () => {
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]); // For search results
-  const [searchQuery, setSearchQuery] = useState(""); // Search query
-  const [sortOption, setSortOption] = useState(""); // Sorting option
-  const [sortDirection, setSortDirection] = useState("asc"); // Sorting direction (asc or desc)
+  const [keyboards, setKeyboards] = useState([]);
+  const [keycaps, setKeycaps] = useState([]);
+  const [switches, setSwitches] = useState([]);
+  const [others, setOthers] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState("");
+  const [sortDirection, setSortDirection] = useState("asc");
   const [showAddProductPopUp, setShowAddProductPopUp] = useState(false);
-  const [editProduct, setEditProduct] = useState(null); // Track the product being edited
+  const [editProduct, setEditProduct] = useState(null);
 
   // Fetch products from the API
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAllProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/products");
-        const data = await response.json();
-        if (data.success) {
-          setProducts(data.data);
-          setFilteredProducts(data.data); // Initialize filtered products
-        } else {
-          console.error("Failed to fetch products:", data.message);
-        }
+        // Fetch keyboards
+        const keyboardsResponse = await fetch("http://localhost:5000/api/keyboard");
+        const keyboardsData = await keyboardsResponse.json();
+        
+        // Fetch keycaps
+        const keycapsResponse = await fetch("http://localhost:5000/api/keycaps");
+        const keycapsData = await keycapsResponse.json();
+        
+        // Fetch switches
+        const switchesResponse = await fetch("http://localhost:5000/api/switches");
+        const switchesData = await switchesResponse.json();
+        
+        // Fetch others
+        const othersResponse = await fetch("http://localhost:5000/api/others");
+        const othersData = await othersResponse.json();
+
+        // Set individual category states
+        setKeyboards(keyboardsData.success ? keyboardsData.data : []);
+        setKeycaps(keycapsData.success ? keycapsData.data : []);
+        setSwitches(switchesData.success ? switchesData.data : []);
+        setOthers(othersData.success ? othersData.data : []);
+
+        // Combine all products for the filtered products state
+        const allProducts = [
+          ...(keyboardsData.success ? keyboardsData.data.map(item => ({...item, category: 'keyboards'})) : []),
+          ...(keycapsData.success ? keycapsData.data.map(item => ({...item, category: 'keycaps'})) : []),
+          ...(switchesData.success ? switchesData.data.map(item => ({...item, category: 'switches'})) : []),
+          ...(othersData.success ? othersData.data.map(item => ({...item, category: 'others'})) : [])
+        ];
+        
+        setFilteredProducts(allProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
 
-    fetchProducts();
+    fetchAllProducts();
   }, []);
 
   // Handle search functionality
   const handleSearch = (query) => {
     setSearchQuery(query);
     if (query.trim() === "") {
-      setFilteredProducts(products); // Reset to all products if search is empty
+      // Combine all products when search is empty
+      setFilteredProducts([...keyboards, ...keycaps, ...switches, ...others]);
     } else {
       const lowerCaseQuery = query.toLowerCase();
-      const filtered = products.filter(
+      const filtered = [...keyboards, ...keycaps, ...switches, ...others].filter(
         (product) =>
           product.name.toLowerCase().includes(lowerCaseQuery) ||
-          product.brand.toLowerCase().includes(lowerCaseQuery) ||
-          product.category.toLowerCase().includes(lowerCaseQuery)
+          product.brand?.toLowerCase().includes(lowerCaseQuery) ||
+          (product.category && product.category.toLowerCase().includes(lowerCaseQuery))
       );
       setFilteredProducts(filtered);
     }
@@ -79,68 +106,134 @@ const AdminInventory = () => {
     setFilteredProducts(sorted);
   };
 
+  // Handle product addition
   const handleProductAdded = (newProduct) => {
-    setProducts((prevProducts) => [...prevProducts, newProduct]);
-    setFilteredProducts((prevProducts) => [...prevProducts, newProduct]); // Update filtered products
+    // Determine which category state to update
+    switch (newProduct.category?.toLowerCase()) {
+      case 'keyboard':
+      case 'keyboards':
+        setKeyboards(prev => [...prev, newProduct]);
+        break;
+      case 'keycap':
+      case 'keycaps':
+        setKeycaps(prev => [...prev, newProduct]);
+        break;
+      case 'switch':
+      case 'switches':
+        setSwitches(prev => [...prev, newProduct]);
+        break;
+      case 'other':
+      case 'others':
+        setOthers(prev => [...prev, newProduct]);
+        break;
+      default:
+        console.error('Unknown category:', newProduct.category);
+    }
+    
+    // Add to filtered products
+    setFilteredProducts(prev => [...prev, newProduct]);
   };
 
+  // Handle product update
   const handleProductUpdated = (updatedProduct) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product._id === updatedProduct._id ? updatedProduct : product
-      )
-    );
-    setFilteredProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product._id === updatedProduct._id ? updatedProduct : product
-      )
-    );
+    // Create the update function
+    const updateStateArray = (prevState) => 
+      prevState.map((item) => 
+        item._id === updatedProduct._id ? updatedProduct : item
+      );
+  
+    // Update the specific category state
+    switch (updatedProduct.category?.toLowerCase()) {
+      case 'keyboard':
+      case 'keyboards':
+        setKeyboards(prev => updateStateArray(prev));
+        break;
+      case 'keycap':
+      case 'keycaps':
+        setKeycaps(prev => updateStateArray(prev));
+        break;
+      case 'switch':
+      case 'switches':
+        setSwitches(prev => updateStateArray(prev));
+        break;
+      case 'other':
+      case 'others':
+        setOthers(prev => updateStateArray(prev));
+        break;
+      default:
+        console.error('Unknown category:', updatedProduct.category);
+    }
+  
+    // Update filtered products
+    setFilteredProducts(prev => updateStateArray(prev));
   };
 
   // Handle product deletion
-const handleDeleteProduct = async (id, category) => {
-  if (window.confirm("Are you sure you want to delete this product?")) {
-    try {
-      // Map categories to their respective endpoints
-      const categoryEndpointMap = {
-        products: "products",
-        keyboard: "Keyboard", // Ensure this matches the actual category value
-        switches: "switches",
-        keycaps: "keycaps",
-        others: "others",
-      };
-
-      const endpoint = categoryEndpointMap[category.toLowerCase()];
-      if (!endpoint) {
-        alert("Invalid category. Unable to delete product.");
-        return;
-      }
-
-      const response = await fetch(
-        `http://localhost:5000/api/${endpoint}/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      const data = await response.json();
-      if (data.success) {
-        alert("Product deleted successfully!");
-        setProducts((prevProducts) =>
-          prevProducts.filter((product) => product._id !== id)
-        );
-        setFilteredProducts((prevProducts) =>
-          prevProducts.filter((product) => product._id !== id)
-        );
-      } else {
-        alert("Failed to delete product: " + data.message);
-      }
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      alert("An error occurred while deleting the product.");
+  const handleDeleteProduct = async (id, category) => {
+    if (!category) {
+      console.error('No category provided for deletion');
+      return;
     }
-  }
-};
+  
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        // Standardize category name for endpoint
+        let endpoint;
+        
+        // Get the correct singular form endpoint
+        if (category.toLowerCase().includes('keyboard')) {
+          endpoint = 'keyboard';
+        } else if (category.toLowerCase().includes('keycap')) {
+          endpoint = 'keycaps';
+        } else if (category.toLowerCase().includes('switch')) {
+          endpoint = 'switches';
+        } else if (category.toLowerCase().includes('other')) {
+          endpoint = 'others';
+        } else {
+          throw new Error(`Invalid category: ${category}`);
+        }
+  
+        const response = await fetch(
+          `http://localhost:5000/api/${endpoint}/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || `Failed to delete product: HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Update the specific category state using the correctly mapped endpoint
+          if (endpoint === 'keyboard') {
+            setKeyboards(prev => prev.filter(item => item._id !== id));
+          } else if (endpoint === 'keycaps') {
+            setKeycaps(prev => prev.filter(item => item._id !== id));
+          } else if (endpoint === 'switches') {
+            setSwitches(prev => prev.filter(item => item._id !== id));
+          } else if (endpoint === 'others') {
+            setOthers(prev => prev.filter(item => item._id !== id));
+          }
+  
+          // Update filtered products
+          setFilteredProducts(prev => prev.filter(item => item._id !== id));
+          alert("Product deleted successfully!");
+        } else {
+          throw new Error(data.message || 'Failed to delete product');
+        }
+      } catch (error) {
+        console.error("Error deleting product:", error);
+        alert(`Error deleting product: ${error.message}`);
+      }
+    }
+  };
 
   return (
     <div className="px-15 py-5">
@@ -238,7 +331,7 @@ const handleDeleteProduct = async (id, category) => {
                   {/* Fixed width for the Edit button */}
                   <button
                     onClick={() => setEditProduct(product)}
-                    className="bg-blue-100 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-200 w-[70px] text-center"
+                    className="bg-blue-100 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-200 w-[70px] text-center cursor-pointer"
                   >
                     Edit
                   </button>
@@ -250,7 +343,7 @@ const handleDeleteProduct = async (id, category) => {
                     onClick={() =>
                       handleDeleteProduct(product._id, product.category)
                     }
-                    className="bg-red-100 text-red-500 px-4 py-2 rounded-lg hover:bg-red-200 flex items-center"
+                    className="bg-red-100 text-red-500 px-4 py-2 rounded-lg hover:bg-red-200 flex items-center cursor-pointer"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>

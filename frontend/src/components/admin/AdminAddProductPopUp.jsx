@@ -79,15 +79,21 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
             <div></div>
             <div>
               <label className="block font-bold mb-1">Switch Options:</label>
-              <input
-                type="text"
+              <select
                 name="switchOptions"
-                placeholder="eg. Gateron Yellows, Cherry MX Browns, etc."
                 value={formData.switchOptions || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
                 required="false"
-              />
+              >
+                <option value="">-- Select Case Material --</option>
+                <option value="Linear">Linear</option>
+                <option value="Tactile">Tactile</option>
+                <option value="Clicky">Clicky</option>
+                <option value="Silent">Silent</option>
+                <option value="Magnetic">Magnetic</option>
+                <option value="No Info">No Info</option>
+              </select>
             </div>
             <div>
               <label className="block font-bold mb-1">Layout Size:</label>
@@ -169,15 +175,23 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
             </div>
             <div>
               <label className="block font-bold mb-1">Layout Ergonomics:</label>
-              <input
-                type="text"
+              <select
                 name="layoutErgonomics"
-                placeholder="Enter layoutErgonomics"
                 value={formData.layoutErgonomics || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
                 required="false"
-              />
+              >
+                <option value="">-- Select Layout Ergonomics --</option>
+                <option value="Normal">Normal</option>
+                <option value="Alice">Alice</option>
+                <option value="Split">Split</option>
+                <option value="Split Spacebar">Split Spacebar</option>
+                <option value="Split Backspace">Split Backspace</option>
+                <option value="Ortholinear">Ortholinear</option>
+                <option value="Southpaw">Southpaw</option>
+                <option value="No Info">No Info</option>
+              </select>
             </div>
             <div>
               <label className="block font-bold mb-1">Connectivity:</label>
@@ -214,16 +228,30 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 <option value="No Info">No Info</option>
               </select>
             </div>
-            <div>
-              <label className="block font-bold mb-1">Battery Capacity:</label>
+            <div className="mb-4">
+              <label htmlFor="batteryCapacity" className="block font-bold mb-1">
+                Battery Capacity:{" "}
+                <span className="text-blue-600">
+                  {formData.batteryCapacity ?? 0} mAh
+                </span>
+              </label>
               <input
-                type="text"
+                type="range"
+                id="batteryCapacity"
                 name="batteryCapacity"
-                placeholder="Enter batteryCapacity"
-                value={formData.batteryCapacity || ""}
-                onChange={handleChange}
-                className="border p-2 rounded w-full"
-                required="false"
+                min="0"
+                max="20000"
+                step="1"
+                value={formData.batteryCapacity ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    batteryCapacity: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
               />
             </div>
             <div>
@@ -243,28 +271,56 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
             </div>
 
             <div>
-              <label className="block font-bold mb-1">Case Colors:</label>
-              <input
-                type="text"
+              <label className="block font-bold mb-1">Case Color:</label>
+              <select
                 name="caseColors"
-                placeholder="Enter caseColors"
                 value={formData.caseColors || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
                 required="false"
-              />
+              >
+                <option value="">-- Select Case Color --</option>
+                <option value="Black">Black</option>
+                <option value="White">White</option>
+                <option value="Grey">Grey</option>
+                <option value="Blue">Blue</option>
+                <option value="Pink">Pink</option>
+                <option value="Beige">Beige</option>
+                <option value="Purple">Purple</option>
+                <option value="Red">Red</option>
+                <option value="Brown">Brown</option>
+                <option value="Clear">Clear</option>
+                <option value="Orange">Orange</option>
+                <option value="Yellow">Yellow</option>
+                <option value="No Info">No Info</option>
+              </select>
             </div>
             <div>
               <label className="block font-bold mb-1">Case Material:</label>
-              <input
-                type="text"
+              <select
                 name="caseMaterial"
-                placeholder="Enter caseMaterial"
                 value={formData.caseMaterial || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
                 required="false"
-              />
+              >
+                <option value="">-- Select Case Material --</option>
+                <option value="Plastic">Plastic</option>
+                <option value="Polycarbonate">Polycarbonate</option>
+                <option value="Aluminum">Aluminum</option>
+                <option value="FR4">FR4</option>
+                <option value="Steel">Steel</option>
+                <option value="POM">POM</option>
+                <option value="CarbonFiber">CarbonFiber</option>
+                <option value="Brass">Brass</option>
+                <option value="Acrylic">Acrylic</option>
+                <option value="Silicone">Silicone</option>
+                <option value="Copper">Copper</option>
+                <option value="Titanium">Titanium</option>
+                <option value="Ceramic">Ceramic</option>
+                <option value="Marble">Marble</option>
+                <option value="No Info">No Info</option>
+              </select>
             </div>
             <div>
               <label className="block font-bold mb-1">Keycap Material:</label>
@@ -295,16 +351,28 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 required="false"
               />
             </div>
-            <div>
-              <label className="block font-bold mb-1">Keyboard Weight:</label>
+            <div className="mb-4">
+              <label htmlFor="weight" className="block font-bold mb-1">
+                Weight:{" "}
+                <span className="text-blue-600">{formData.weight ?? 0} g</span>
+              </label>
               <input
-                type="text"
+                type="range"
+                id="weight"
                 name="weight"
-                placeholder="Enter weight"
-                value={formData.weight || ""}
-                onChange={handleChange}
-                className="border p-2 rounded w-full"
-                required="false"
+                min="0"
+                max="6000"
+                step="1"
+                value={formData.weight ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    weight: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
               />
             </div>
 
@@ -595,6 +663,88 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 <option value="No Info">No Info</option>
               </select>
             </div>
+            <div>
+              <label className="block font-bold mb-1">
+                Top Housing Material:
+              </label>
+              <select
+                name="topHousingMaterial"
+                value={formData.topHousingMaterial || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Top Housing Material --</option>
+                <option value="POM">POM</option>
+                <option value="LY">LY</option>
+                <option value="UPE">UPE</option>
+                <option value="Nylon">Nylon</option>
+                <option value="POK">POK</option>
+                <option value="PC">PC</option>
+                <option value="PBT">PBT</option>
+                <option value="UHMWPE">UHMWPE</option>
+                <option value="PME">PME</option>
+                <option value="ABS">ABS</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold mb-1">
+                Bottom Housing Material:
+              </label>
+              <select
+                name="bottomHousingMaterial"
+                value={formData.bottomHousingMaterial || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Bottom Housing Material --</option>
+                <option value="POM">POM</option>
+                <option value="LY">LY</option>
+                <option value="UPE">UPE</option>
+                <option value="Nylon">Nylon</option>
+                <option value="POK">POK</option>
+                <option value="PC">PC</option>
+                <option value="PBT">PBT</option>
+                <option value="UHMWPE">UHMWPE</option>
+                <option value="PME">PME</option>
+                <option value="ABS">ABS</option>
+                <option value="PTFE">PTFE</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold mb-1">Spring Type:</label>
+              <select
+                name="springs"
+                value={formData.springs || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Spring Type --</option>
+                <option value="Standard">Standard</option>
+                <option value="Double-Stage">Double-Stage</option>
+                <option value="Progressive">Progressive</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold mb-1">Number of Pins:</label>
+              <select
+                name="pins"
+                value={formData.pins || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Number of Pins --</option>
+                <option value="5-Pin">5-Pin</option>
+                <option value="3-Pin">3-Pin</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
           </>
         );
       case "Keycaps":
@@ -630,26 +780,7 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
           </>
         );
       case "Others":
-        return (
-          <>
-            <div className="block font-extrabold mb-1">
-              Category specific optional additonal details
-            </div>
-            <div></div>
-            <div>
-              <label className="block font-bold mb-1">Description:</label>
-              <textarea
-                name="description"
-                placeholder="Enter description"
-                value={formData.description || ""}
-                onChange={handleChange}
-                className="border p-2 rounded w-full"
-                rows="4"
-              ></textarea>
-            </div>
-            {/* Add other "Others"-specific fields here */}
-          </>
-        );
+        return <></>;
       default:
         return null;
     }
