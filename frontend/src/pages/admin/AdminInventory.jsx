@@ -262,12 +262,12 @@ const AdminInventory = () => {
   };
 
   return (
-    <div className="px-15 py-5">
-      <div className="bg-[#BFC8E5] w-[1540px] h-[880px] flex flex-col gap-y-5 pt-4 rounded-xl">
+    <div className="px-2 md:px-8 py-5">
+      <div className="bg-[#BFC8E5] w-full max-w-full h-auto min-h-[600px] flex flex-col gap-y-5 pt-4 rounded-xl">
         {/* Sticky Header */}
-        <div className="px-6 py-0 flex justify-between items-center sticky top-0 bg-[#BFC8E5] z-10">
-          <div className="text-6xl font-bold">Inventory</div>
-          <div className="flex items-center gap-x-4">
+        <div className="px-4 md:px-6 py-0 flex flex-col md:flex-row justify-between items-start md:items-center sticky top-0 bg-[#BFC8E5] z-10 gap-y-2">
+          <div className="text-3xl md:text-6xl font-bold">Inventory</div>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
             <AdminSearchField onSearch={handleSearch} />
             {/* Category Filter Dropdown */}
             <div className="relative">
@@ -371,62 +371,62 @@ const AdminInventory = () => {
                 </button>
               </div>
             </div>
+            <button
+              onClick={() => setShowAddProductPopUp(true)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center gap-x-2 cursor-pointer"
+            >
+              <Plus className="w-5 h-5 hover:text-gray-200" />
+              <span className="hidden sm:inline">Add Product</span>
+            </button>
           </div>
-          <button
-            onClick={() => setShowAddProductPopUp(true)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center gap-x-2 cursor-pointer"
-          >
-            <Plus className="w-5 h-5 hover:text-gray-200" />
-            Add Product
-          </button>
         </div>
         {/* Scrollable Products */}
-        <div className="px-6 py-4 overflow-y-auto h-[calc(100%-80px)]">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <div
-                key={product._id}
-                className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md mb-4"
-              >
-                <div className="flex items-center gap-x-4">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-16 h-16 rounded-lg"
-                  />
-                  <div>
-                    <div className="font-bold text-lg">{product.name}</div>
-                    <div className="text-gray-500">
-                      ₱{product.price.toFixed(2)}
+        <div className="px-2 md:px-6 py-4 overflow-y-auto h-[calc(100%-80px)]">
+          <div className="flex flex-col gap-y-4 w-full min-w-[320px]">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <div
+                  key={product._id}
+                  className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-lg shadow-md"
+                >
+                  <div className="flex items-center gap-x-4 w-full sm:w-auto mb-2 sm:mb-0">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-16 h-16 rounded-lg"
+                    />
+                    <div>
+                      <div className="font-bold text-base md:text-lg">{product.name}</div>
+                      <div className="text-gray-500 text-sm md:text-base">
+                        ₱{product.price.toFixed(2)}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-x-4">
-                  {/* Fixed width for the Edit button */}
-                  <button
-                    onClick={() => setEditProduct(product)}
-                    className="bg-blue-100 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-200 w-[70px] text-center cursor-pointer"
-                  >
-                    Edit
-                  </button>
-                  {/* Fixed width for the stock amount */}
-                  <div className="font-bold text-gray-700 text-center w-[100px]">
-                    {product.quantity} in Stock
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-2 w-full sm:w-auto">
+                    <button
+                      onClick={() => setEditProduct(product)}
+                      className="bg-blue-100 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-200 w-[70px] text-center cursor-pointer"
+                    >
+                      Edit
+                    </button>
+                    <div className="font-bold text-gray-700 text-center w-[100px]">
+                      {product.quantity} in Stock
+                    </div>
+                    <button
+                      onClick={() =>
+                        handleDeleteProduct(product._id, product.category)
+                      }
+                      className="bg-red-100 text-red-500 px-4 py-2 rounded-lg hover:bg-red-200 flex items-center cursor-pointer"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() =>
-                      handleDeleteProduct(product._id, product.category)
-                    }
-                    className="bg-red-100 text-red-500 px-4 py-2 rounded-lg hover:bg-red-200 flex items-center cursor-pointer"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
                 </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-gray-500">No products available</div>
-          )}
+              ))
+            ) : (
+              <div className="text-gray-500">No products available</div>
+            )}
+          </div>
         </div>
       </div>
       {/* Add Product Pop-Up */}

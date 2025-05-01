@@ -108,11 +108,11 @@ const AdminDashboard = () => {
    .slice(0, 6);
 
   return (
-    <div className="px-6 py-8">
-      <div className="text-5xl font-bold mb-8">Dashboard Overview</div>
+    <div className="px-2 md:px-6 lg:px-12 py-4 md:py-8">
+      <div className="text-3xl md:text-5xl font-bold mb-6 md:mb-8">Dashboard Overview</div>
 
       {/* Best-Selling by Category */}
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <div>
           <h2 className="text-xl font-bold mb-2">Best-Selling Keyboards</h2>
           {getBestSelling(keyboards).map(item => (
@@ -164,50 +164,54 @@ const AdminDashboard = () => {
       </div>
 
       {/* Monthly Revenue Bar Chart & Pie Chart */}
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-bold mb-4">Monthly Revenue</h2>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={monthlyRevenue}>
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="revenue" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow min-w-0">
+          <h2 className="text-lg md:text-xl font-bold mb-4">Monthly Revenue</h2>
+          <div className="w-full h-[220px] md:h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={monthlyRevenue}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="revenue" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-bold mb-4">Sales by Category</h2>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                label
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow min-w-0">
+          <h2 className="text-lg md:text-xl font-bold mb-4">Sales by Category</h2>
+          <div className="w-full h-[220px] md:h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  label
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
       {/* Recent Activity */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Recent Activity</h2>
-        <div className="bg-white p-4 rounded-lg shadow">
+        <h2 className="text-xl md:text-2xl font-bold mb-4">Recent Activity</h2>
+        <div className="bg-white p-3 md:p-4 rounded-lg shadow overflow-x-auto">
           <ul>
             {recentActivity.length === 0 && <li className="text-gray-500">No recent activity.</li>}
             {recentActivity.map((event, idx) => (
-              <li key={idx} className="mb-2 flex items-center">
+              <li key={idx} className="mb-2 flex flex-wrap items-center text-xs md:text-base">
                 <span className="font-bold mr-2">{event.type}:</span>
                 <span className="mr-2">{event.name}</span>
                 <span className="text-gray-500 mr-2">({event.category})</span>
@@ -222,8 +226,8 @@ const AdminDashboard = () => {
 
       {/* Low-Stock Items */}
       <div>
-        <h2 className="text-2xl font-bold mb-4">Items Low on Stock</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <h2 className="text-xl md:text-2xl font-bold mb-4">Items Low on Stock</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {lowStockItems.map((item) => (
             <div
               key={item._id}
@@ -232,9 +236,9 @@ const AdminDashboard = () => {
               <img
                 src={item.image}
                 alt={item.name}
-                className="w-16 h-16 rounded-lg mb-4"
+                className="w-16 h-16 rounded-lg mb-4 object-cover"
               />
-              <div className="font-bold text-lg">{item.name}</div>
+              <div className="font-bold text-base md:text-lg text-center">{item.name}</div>
               <div className="text-red-500">Stock: {item.quantity}</div>
             </div>
           ))}

@@ -84,6 +84,19 @@ const AdminCheckout = () => {
     setCart((prevCart) => prevCart.filter((_, i) => i !== index));
   };
 
+  // Group cart items by productId and sum quantity
+  const getCartSummary = () => {
+    const summary = {};
+    cart.forEach(item => {
+      if (!summary[item._id]) {
+        summary[item._id] = { ...item, quantity: 1 };
+      } else {
+        summary[item._id].quantity += 1;
+      }
+    });
+    return Object.values(summary);
+  };
+
   // Calculate total price
   const calculateSubtotal = () => {
     return cart.reduce((total, item) => total + item.price, 0).toFixed(2);
@@ -99,13 +112,7 @@ const AdminCheckout = () => {
   // Handle checkout
   const handleCheckout = async () => {
     try {
-      const items = cart.map((item) => ({
-        productId: item._id,
-        name: item.name,
-        quantity: 1, // Assuming 1 item per cart entry
-        price: item.price,
-        category: item.category, // Add category for stock update
-      }));
+      const items = getCartSummary();
 
       const totalAmount = calculateTotal();
 
@@ -128,24 +135,29 @@ const AdminCheckout = () => {
         return;
       }
 
-      // Update stock for each product in the cart
-      for (const item of items) {
-        // Determine endpoint based on category
+      // Update stock and sold for each product in the cart
+      await Promise.all(items.map(async (item) => {
         let endpoint = "";
         if (item.category === "keyboard") endpoint = "keyboard";
         else if (item.category === "keycaps") endpoint = "keycaps";
         else if (item.category === "switches") endpoint = "switches";
         else if (item.category === "others") endpoint = "others";
-        else continue;
+        else return;
 
-        await fetch(`http://localhost:5000/api/${endpoint}/${item.productId}/decrement`, {
+        // Decrement stock
+        await fetch(`http://localhost:5000/api/${endpoint}/${item._id}/decrement`, {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ quantity: item.quantity }),
         });
-      }
+
+        // Increment sold
+        await fetch(`http://localhost:5000/api/${endpoint}/${item._id}/sales`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sold: item.quantity }),
+        });
+      }));
 
       alert("Checkout successful!");
       setCart([]);
@@ -186,26 +198,26 @@ const AdminCheckout = () => {
     <div className="flex flex-col lg:flex-row h-screen">
       {/* Product List */}
       <div className="bg-[#BFC8E5] w-full lg:w-[710px] flex flex-col justify-start items-center gap-y-5 overflow-y-auto pt-4">
-        <div className="w-full px-6">
-          <div className="text-3xl lg:text-5xl font-bold">Checkout</div>
+        <div className="w-full px-4 md:px-6">
+          <div className="text-2xl md:text-3xl lg:text-5xl font-bold">Checkout</div>
           <div className="h-4"></div>
           <AdminSearchField onSearch={handleSearch} />
         </div>
-        <div className="w-full px-6">
+        <div className="w-full px-4 md:px-6">
           {filteredProducts.map((product) => (
             <div
               key={product._id}
-              className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md mb-4"
+              className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-lg shadow-md mb-4"
             >
-              <div className="flex items-center gap-x-4">
+              <div className="flex items-center gap-x-4 w-full sm:w-auto mb-2 sm:mb-0">
                 <img
                   src={product.image}
                   alt={product.name}
                   className="w-16 h-16 rounded-lg"
                 />
                 <div>
-                  <div className="font-bold text-lg">{product.name}</div>
-                  <div className="text-gray-500">
+                  <div className="font-bold text-base md:text-lg">{product.name}</div>
+                  <div className="text-gray-500 text-sm md:text-base">
                     ₱{product.price.toFixed(2)}
                   </div>
                   <div
@@ -221,12 +233,12 @@ const AdminCheckout = () => {
               </div>
               <button
                 onClick={() => handleAddToCart(product)}
-                disabled={product.quantity <= 0} // Disable button if out of stock
+                disabled={product.quantity <= 0}
                 className={`${
                   product.quantity > 0
                     ? "bg-blue-500 hover:bg-blue-600"
                     : "bg-gray-400 cursor-not-allowed"
-                } text-white px-4 py-2 rounded-lg flex items-center gap-x-2 cursor-pointer`}
+                } text-white px-4 py-2 rounded-lg flex items-center gap-x-2 cursor-pointer w-full sm:w-auto`}
               >
                 <ShoppingCart size={16} />
                 Add
@@ -237,10 +249,10 @@ const AdminCheckout = () => {
       </div>
 
       {/* Cart Sidebar */}
-      <div className="bg-white w-full lg:w-[950px] h-screen shadow-lg flex flex-col justify-between">
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-4">Cart</h2>
-          <div className="overflow-y-auto max-h-[400px]">
+      <div className="bg-white w-full lg:w-[950px] h-[60vh] lg:h-screen shadow-lg flex flex-col justify-between">
+        <div className="p-4 md:p-6">
+          <h2 className="text-xl md:text-2xl font-bold mb-4">Cart</h2>
+          <div className="overflow-y-auto max-h-[200px] md:max-h-[400px]">
             {cart.map((item, index) => (
               <div
                 key={index}
@@ -253,8 +265,8 @@ const AdminCheckout = () => {
                     className="w-12 h-12 rounded-lg"
                   />
                   <div>
-                    <div className="font-bold text-lg">{item.name}</div>
-                    <div className="text-gray-500">
+                    <div className="font-bold text-base md:text-lg">{item.name}</div>
+                    <div className="text-gray-500 text-sm md:text-base">
                       ₱{item.price.toFixed(2)}
                     </div>
                   </div>
@@ -269,40 +281,40 @@ const AdminCheckout = () => {
             ))}
           </div>
         </div>
-        <div className="p-6 border-t">
-          <div className="w-full px-6 mb-4">
-            <label className="block text-lg font-bold mb-2">Tax Rate (%)</label>
+        <div className="p-4 md:p-6 border-t">
+          <div className="w-full mb-4">
+            <label className="block text-base md:text-lg font-bold mb-2">Tax Rate (%)</label>
             <input
               type="number"
-              value={rawTaxRate} // Use rawTaxRate for the input value
+              value={rawTaxRate}
               onChange={(e) => {
                 const value = e.target.value;
-                setRawTaxRate(value); // Update raw input value
+                setRawTaxRate(value);
                 const parsedValue = parseFloat(value);
                 if (!isNaN(parsedValue)) {
-                  setTaxRate(parseFloat((parsedValue / 100).toFixed(2))); // Update taxRate only when valid
+                  setTaxRate(parseFloat((parsedValue / 100).toFixed(2)));
                 } else {
-                  setTaxRate(0); // Reset taxRate if input is invalid
+                  setTaxRate(0);
                 }
               }}
               className="border rounded-lg p-2 w-full"
             />
           </div>
           <div className="flex justify-between items-center mb-4">
-            <span className="text-lg font-bold">Subtotal</span>
-            <span className="text-lg font-bold">₱{calculateSubtotal()}</span>
+            <span className="text-base md:text-lg font-bold">Subtotal</span>
+            <span className="text-base md:text-lg font-bold">₱{calculateSubtotal()}</span>
           </div>
           <div className="flex justify-between items-center mb-4">
-            <span className="text-lg font-bold">
+            <span className="text-base md:text-lg font-bold">
               Tax ({(taxRate * 100).toFixed(0)}%)
             </span>
-            <span className="text-lg font-bold">
+            <span className="text-base md:text-lg font-bold">
               ₱{(calculateSubtotal() * taxRate).toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between items-center mb-6">
-            <span className="text-xl font-bold">Total</span>
-            <span className="text-xl font-bold">₱{calculateTotal()}</span>
+            <span className="text-lg md:text-xl font-bold">Total</span>
+            <span className="text-lg md:text-xl font-bold">₱{calculateTotal()}</span>
           </div>
           <button
             onClick={handleCheckout}

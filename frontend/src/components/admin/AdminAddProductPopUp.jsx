@@ -35,11 +35,6 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
 
     const finalImage = formData.image || formData.imageLink;
 
-    if (!finalImage) {
-      alert("Please upload an image or provide an image link.");
-      return;
-    }
-
     try {
       // Determine the API endpoint based on the selected category
       const categoryEndpointMap = {
@@ -1208,11 +1203,26 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                   />
                   {/* Image Preview */}
                   {formData.image ? (
-                    <img
-                      src={formData.image}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                    />
+                    <>
+                      <img
+                        src={formData.image}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            image: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
                   ) : (
                     <span className="text-gray-500">Change Item Photo</span>
                   )}
@@ -1222,14 +1232,35 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 <label className="block font-bold mb-1">
                   Or Enter Image Link:
                 </label>
-                <input
-                  type="text"
-                  name="imageLink"
-                  placeholder="Enter image URL"
-                  value={formData.imageLink}
-                  onChange={handleChange}
-                  className="border p-2 rounded w-full"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    name="imageLink"
+                    placeholder="Enter image URL"
+                    value={formData.imageLink}
+                    onChange={handleChange}
+                    className="border p-2 rounded w-full"
+                  />
+                  {formData.imageLink && (
+                    <button
+                      type="button"
+                      className="bg-red-500 text-white rounded px-2 py-1 text-xs"
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, imageLink: "" }))
+                      }
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                {/* Optional: Show preview if imageLink is present and no image */}
+                {formData.imageLink && !formData.image && (
+                  <img
+                    src={formData.imageLink}
+                    alt="Preview"
+                    className="w-24 h-24 object-cover mt-2 rounded"
+                  />
+                )}
               </div>
             </div>
           </form>
