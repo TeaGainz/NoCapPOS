@@ -16,7 +16,7 @@ export const addSwitches = async (req, res) => {
     !switches.brand ||
     !switches.name ||
     !switches.description ||
-    !switches.releaseDate ||
+    !switches.releaseYear ||
     !switches.switchType ||
     !switches.isFactoryLubed ||
     !switches.switchProfile ||
@@ -171,6 +171,30 @@ export const updateSwitchesSales = async (req, res) => {
     res.status(200).json({ success: true, data: updatedSwitches });
   } catch (error) {
     console.error("Error updating switches sales:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const decrementSwitchesStock = async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid switches ID" });
+  }
+
+  try {
+    const switches = await Switches.findById(id);
+    if (!switches) {
+      return res.status(404).json({ success: false, message: "Switches not found" });
+    }
+    if (switches.quantity < quantity) {
+      return res.status(400).json({ success: false, message: "Not enough stock" });
+    }
+    switches.quantity -= quantity;
+    await switches.save();
+    res.status(200).json({ success: true, data: switches });
+  } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

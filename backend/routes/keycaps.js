@@ -5,6 +5,7 @@ import {
   getKeycapsById,
   getKeycaps,
   updateKeycaps,
+  decrementKeycapsStock,
 } from "../controllers/keycaps.js";
 import { updateKeycapsSales } from "../controllers/keycaps.js";
 
@@ -23,5 +24,7 @@ router.put("/:id", updateKeycaps);
 router.delete("/:id", deleteKeycaps);
 
 router.patch("/:id/sales", updateKeycapsSales);
+
+router.patch("/:id/decrement", decrementKeycapsStock);
 
 export default router;

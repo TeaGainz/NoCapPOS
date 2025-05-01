@@ -23,7 +23,7 @@ const switchesSchema = new mongoose.Schema(
       required: false,
     },
     isFactoryLubed: {
-      type: Boolean,
+      type: String,
       required: false,
     },
     switchProfile: {
@@ -51,7 +51,7 @@ const switchesSchema = new mongoose.Schema(
       required: false,
     },
     isHallEffect: {
-      type: Boolean,
+      type: String,
       required: false,
     },
     topHousingMaterial: {
@@ -71,7 +71,7 @@ const switchesSchema = new mongoose.Schema(
       required: false,
     },
     isLongPole: {
-      type: Boolean,
+      type: String,
       required: false,
     },
     price: {

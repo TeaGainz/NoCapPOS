@@ -10,33 +10,33 @@ const keycapsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    releaseDate: {
+    releaseYear: {
       type: String,
-      required: true,
+      required: false,
     },
     description: {
       type: String,
-      required: true,
+      required: false,
     },
     profile: {
       type: String,
-      required: true,
+      required: false,
     },
     material: {
       type: String,
-      required: true,
+      required: false,
     },
     layoutStandard: {
       type: String,
-      required: true,
+      required: false,
     },
     subLegends: {
       type: String,
-      required: true,
+      required: false,
     },
     rgbShineThrough: {
       type: String,
-      required: true,
+      required: false,
     },
     price: {
       type: Number,

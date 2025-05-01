@@ -5,6 +5,7 @@ import {
   getKeyboardById,
   getKeyboard,
   updateKeyboard,
+  decrementKeyboardStock
 } from "../controllers/keyboard.js";
 import { updateKeyboardSales } from "../controllers/keyboard.js";
 
@@ -23,5 +24,7 @@ router.put("/:id", updateKeyboard);
 router.delete("/:id", deleteKeyboard);
 
 router.patch("/:id/sales", updateKeyboardSales);
+
+router.patch("/:id/decrement", decrementKeyboardStock);
 
 export default router;

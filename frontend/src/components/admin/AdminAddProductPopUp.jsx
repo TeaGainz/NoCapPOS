@@ -23,6 +23,16 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validation for price and quantity
+    if (Number(formData.price) < 0) {
+      alert("Price cannot be negative.");
+      return;
+    }
+    if (Number(formData.quantity) < 0) {
+      alert("Quantity cannot be negative.");
+      return;
+    }
+
     const finalImage = formData.image || formData.imageLink;
 
     if (!finalImage) {
@@ -74,11 +84,35 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
         return (
           <>
             <div className="block font-extrabold mb-1">
-              Category specific optional additonal details
+              Category specific details
             </div>
             <div></div>
             <div>
-              <label className="block font-bold mb-1">Switch Options:</label>
+              <label className="block font-bold mb-1">Year Released:</label>
+              <input
+                type="text" // Changed from "text" to "date"
+                name="releaseYear"
+                placeholder="YYYY"
+                value={formData.releaseYear || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              />
+            </div>
+            <div>
+              <label className="block font-bold mb-1">Case Dimensions:</label>
+              <input
+                type="text"
+                name="dimensions"
+                placeholder="Enter Length x Width"
+                value={formData.dimensions || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              />
+            </div>
+            <div>
+              <label className="block font-bold mb-1">Switch Option:</label>
               <select
                 name="switchOptions"
                 value={formData.switchOptions || ""}
@@ -86,7 +120,7 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 className="border p-2 rounded w-full"
                 required="false"
               >
-                <option value="">-- Select Case Material --</option>
+                <option value="">-- Select Switch Option --</option>
                 <option value="Linear">Linear</option>
                 <option value="Tactile">Tactile</option>
                 <option value="Clicky">Clicky</option>
@@ -147,18 +181,6 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
               </select>
             </div>
             <div>
-              <label className="block font-bold mb-1">Release Year:</label>
-              <input
-                type="text" // Changed from "text" to "date"
-                name="releaseYear"
-                placeholder="YYYY"
-                value={formData.releaseYear || ""}
-                onChange={handleChange}
-                className="border p-2 rounded w-full"
-                required="false"
-              />
-            </div>
-            <div>
               <label className="block font-bold mb-1">Layout Standard:</label>
               <select
                 name="layoutStandard"
@@ -170,6 +192,13 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 <option value="">-- Select Layout Standard --</option>
                 <option value="ANSI">ANSI</option>
                 <option value="ISO">ISO</option>
+                <option value="ISO DE">ISO DE</option>
+                <option value="ISO UK">ISO UK</option>
+                <option value="ISO ES">ISO ES</option>
+                <option value="ISO NOR">ISO NOR</option>
+                <option value="ISO Nordic">ISO Nordic</option>
+                <option value="JIS">JIS</option>
+                <option value="ISO FR">ISO FR</option>
                 <option value="No Info">No Info</option>
               </select>
             </div>
@@ -228,32 +257,6 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 <option value="No Info">No Info</option>
               </select>
             </div>
-            <div className="mb-4">
-              <label htmlFor="batteryCapacity" className="block font-bold mb-1">
-                Battery Capacity:{" "}
-                <span className="text-blue-600">
-                  {formData.batteryCapacity ?? 0} mAh
-                </span>
-              </label>
-              <input
-                type="range"
-                id="batteryCapacity"
-                name="batteryCapacity"
-                min="0"
-                max="20000"
-                step="1"
-                value={formData.batteryCapacity ?? 0}
-                onChange={(e) => {
-                  // parse to number so you don't end up with a string
-                  const val = Number(e.target.value);
-                  setFormData((prev) => ({
-                    ...prev,
-                    batteryCapacity: val,
-                  }));
-                }}
-                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
-              />
-            </div>
             <div>
               <label className="block font-bold mb-1">Mount Type:</label>
               <select
@@ -266,6 +269,11 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 <option value="">-- Select Mount Type --</option>
                 <option value="Top Mount">Top Mount</option>
                 <option value="Gasket Mount">Gasket Mount</option>
+                <option value="Plate Mount">Plate Mount</option>
+                <option value="Tray Mount">Tray Mount</option>
+                <option value="Bottom Mount">Bottom Mount</option>
+                <option value="PCB Mount">PCB Mount</option>
+                <option value="Sandwich Mount">Sandwich Mount</option>
                 <option value="No Info">No Info</option>
               </select>
             </div>
@@ -322,33 +330,31 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 <option value="No Info">No Info</option>
               </select>
             </div>
-            <div>
-              <label className="block font-bold mb-1">Keycap Material:</label>
-              <select
-                name="keycapMaterial"
-                value={formData.keycapMaterial || ""}
-                onChange={handleChange}
-                className="border p-2 rounded w-full"
-                required="false"
-              >
-                <option value="">-- Select Keycap Material --</option>
-                <option value="PBT">PBT</option>
-                <option value="ABS">ABS</option>
-                <option value="Ceramic">Ceramic</option>
-                <option value="Aluminum">Aluminum</option>
-                <option value="No Info">No Info</option>
-              </select>
-            </div>
-            <div>
-              <label className="block font-bold mb-1">Case Dimensions:</label>
+
+            <div className="mb-4">
+              <label htmlFor="batteryCapacity" className="block font-bold mb-1">
+                Battery Capacity:{" "}
+                <span className="text-blue-600">
+                  {formData.batteryCapacity ?? 0} mAh
+                </span>
+              </label>
               <input
-                type="text"
-                name="dimensions"
-                placeholder="Enter dimensions"
-                value={formData.dimensions || ""}
-                onChange={handleChange}
-                className="border p-2 rounded w-full"
-                required="false"
+                type="range"
+                id="batteryCapacity"
+                name="batteryCapacity"
+                min="0"
+                max="20000"
+                step="1"
+                value={formData.batteryCapacity ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    batteryCapacity: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
               />
             </div>
             <div className="mb-4">
@@ -375,7 +381,27 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
               />
             </div>
-
+            <div>
+              <label className="block font-bold mb-1">Keycap Material:</label>
+              <select
+                name="keycapMaterial"
+                value={formData.keycapMaterial || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Keycap Material --</option>
+                <option value="PBT">PBT</option>
+                <option value="ABS">ABS</option>
+                <option value="PC">PC</option>
+                <option value="Wood">Wood</option>
+                <option value="Ceramic">Ceramic</option>
+                <option value="Aluminum">Aluminum</option>
+                <option value="Stainless Steel">Stainless Steel</option>
+                <option value="Zinc Alloy">Zinc Alloy</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
             <div>
               <label className="block font-bold mb-1">Knob Support:</label>
               <select
@@ -597,23 +623,11 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
         return (
           <>
             <div className="block font-extrabold mb-1">
-              Category specific optional additonal details
+              Category specific details
             </div>
             <div></div>
             <div>
-              <label className="block font-bold mb-1">Actuation Force:</label>
-              <input
-                type="text"
-                name="actuationForce"
-                placeholder="Enter actuation force"
-                value={formData.actuationForce || ""}
-                onChange={handleChange}
-                className="border p-2 rounded w-full"
-              />
-            </div>
-            {/* Add other switches-specific fields here */}
-            <div>
-              <label className="block font-bold mb-1">Release Year:</label>
+              <label className="block font-bold mb-1">Year Released:</label>
               <input
                 type="text"
                 name="releaseYear"
@@ -745,36 +759,307 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                 <option value="No Info">No Info</option>
               </select>
             </div>
+            <div>
+              <label className="block font-bold mb-1">Switch Profile:</label>
+              <select
+                name="switchProfile"
+                value={formData.switchProfile || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Switch Profile--</option>
+                <option value="Normal">Normal</option>
+                <option value="Low-Profile">Low-Profile</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold mb-1">
+                Factory Lubed Status:
+              </label>
+              <select
+                name="isFactoryLubed"
+                value={formData.isFactoryLubed || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Factory Lubed Status --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold mb-1">
+                Is the switch Hall Effect:?
+              </label>
+              <select
+                name="isHallEffect"
+                value={formData.isHallEffect || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Hall Effect Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold mb-1">
+                Is the switch Long Pole?:
+              </label>
+              <select
+                name="isLongPole"
+                value={formData.isLongPole || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Whether Long Pole --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="actuationForce" className="block font-bold mb-1">
+                Actuation Force:{" "}
+                <span className="text-blue-600">
+                  {formData.actuationForce ?? 0} g
+                </span>
+              </label>
+              <input
+                type="range"
+                id="actuationForce"
+                name="actuationForce"
+                min="0"
+                max="100"
+                step="1"
+                value={formData.actuationForce ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    actuationForce: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="bottomOutForce" className="block font-bold mb-1">
+                Bottom out Force:{" "}
+                <span className="text-blue-600">
+                  {formData.bottomOutForce ?? 0} g
+                </span>
+              </label>
+              <input
+                type="range"
+                id="bottomOutForce"
+                name="bottomOutForce"
+                min="0"
+                max="500"
+                step="1"
+                value={formData.bottomOutForce ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    bottomOutForce: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="preTravel" className="block font-bold mb-1">
+                Pre-Travel:{" "}
+                <span className="text-blue-600">
+                  {formData.preTravel ?? 0} mm
+                </span>
+              </label>
+              <input
+                type="range"
+                id="preTravel"
+                name="preTravel"
+                min="0"
+                max="4"
+                step=".01"
+                value={formData.preTravel ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    preTravel: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="totalTravel" className="block font-bold mb-1">
+                Total Travel:{" "}
+                <span className="text-blue-600">
+                  {formData.totalTravel ?? 0} mm
+                </span>
+              </label>
+              <input
+                type="range"
+                id="totalTravel"
+                name="totalTravel"
+                min="0"
+                max="4.5"
+                step=".01"
+                value={formData.totalTravel ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    totalTravel: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
+              />
+            </div>
           </>
         );
       case "Keycaps":
         return (
           <>
             <div className="block font-extrabold mb-1">
-              Category specific optional additonal details
+              Category specific details
             </div>
             <div></div>
             <div>
-              <label className="block font-bold mb-1">Profile:</label>
+              <label className="block font-bold mb-1">Year Released:</label>
               <input
                 type="text"
-                name="profile"
-                placeholder="Enter keycap profile"
-                value={formData.profile || ""}
+                name="releaseYear"
+                placeholder="YYYY"
+                value={formData.releaseYear || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
               />
             </div>
             <div>
-              <label className="block font-bold mb-1">Material:</label>
-              <input
-                type="text"
+              <label className="block font-bold mb-1">Keycap Profile:</label>
+              <select
+                name="profile"
+                value={formData.profile || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Keycap Profile--</option>
+                <option value="Cherry">Cherry</option>
+                <option value="OEM">OEM</option>
+                <option value="SA">SA</option>
+                <option value="XDA">XDA</option>
+                <option value="ASA">ASA</option>
+                <option value="KAT">KAT</option>
+                <option value="DSA">DSA</option>
+                <option value="MOA">MOA</option>
+                <option value="MAO">MAO</option>
+                <option value="MDA">MDA</option>
+                <option value="OSA">OSA</option>
+                <option value="SOA">SOA</option>
+                <option value="KDA">KDA</option>
+                <option value="KAM">KAM</option>
+                <option value="KSA">KSA</option>
+                <option value="GSA">GSA</option>
+                <option value="JDA">JDA</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold mb-1">Keycap Material:</label>
+              <select
                 name="material"
-                placeholder="Enter keycap material"
                 value={formData.material || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
-              />
+                required="false"
+              >
+                <option value="">-- Select Keycap Material --</option>
+                <option value="PBT">PBT</option>
+                <option value="ABS">ABS</option>
+                <option value="PC">PC</option>
+                <option value="Wood">Wood</option>
+                <option value="Ceramic">Ceramic</option>
+                <option value="Aluminum">Aluminum</option>
+                <option value="Stainless Steel">Stainless Steel</option>
+                <option value="Zinc Alloy">Zinc Alloy</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold mb-1">Layout Standard:</label>
+              <select
+                name="layoutStandard"
+                value={formData.layoutStandard || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Layout Standard --</option>
+                <option value="ANSI">ANSI</option>
+                <option value="ISO">ISO</option>
+                <option value="ISO DE">ISO DE</option>
+                <option value="ISO UK">ISO UK</option>
+                <option value="ISO ES">ISO ES</option>
+                <option value="ISO NOR">ISO NOR</option>
+                <option value="ISO Nordic">ISO Nordic</option>
+                <option value="ISO FR">ISO FR</option>
+                <option value="JIS">JIS</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold mb-1">Sub-Legends:</label>
+              <select
+                name="subLegends"
+                value={formData.subLegends || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Sub-Legends --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Hiragana">Hiragana</option>
+                <option value="Katakana">Katakana</option>
+                <option value="Kanji">Kanji</option>
+                <option value="Hangul">Hangul</option>
+                <option value="Cyrillic">Cyrillic</option>
+                <option value="Zhuyin">Zhuyin</option>
+                <option value="Cangjie">Cangjie</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">RGB Shine Through:</label>
+              <select
+                name="rgbShineThrough"
+                value={formData.rgbShineThrough || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select RGB Shine Through --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
             </div>
             {/* Add other keycaps-specific fields here */}
           </>

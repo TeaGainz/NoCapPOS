@@ -164,3 +164,27 @@ export const updateKeycapsSales = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export const decrementKeycapsStock = async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid keycaps ID" });
+  }
+
+  try {
+    const keycaps = await Keycaps.findById(id);
+    if (!keycaps) {
+      return res.status(404).json({ success: false, message: "Keycaps not found" });
+    }
+    if (keycaps.quantity < quantity) {
+      return res.status(400).json({ success: false, message: "Not enough stock" });
+    }
+    keycaps.quantity -= quantity;
+    await keycaps.save();
+    res.status(200).json({ success: true, data: keycaps });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};

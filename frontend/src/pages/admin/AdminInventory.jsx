@@ -15,6 +15,7 @@ const AdminInventory = () => {
   const [sortDirection, setSortDirection] = useState("asc");
   const [showAddProductPopUp, setShowAddProductPopUp] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState('all');
 
   // Fetch products from the API
   useEffect(() => {
@@ -44,7 +45,7 @@ const AdminInventory = () => {
 
         // Combine all products for the filtered products state
         const allProducts = [
-          ...(keyboardsData.success ? keyboardsData.data.map(item => ({...item, category: 'keyboards'})) : []),
+          ...(keyboardsData.success ? keyboardsData.data.map(item => ({...item, category: 'keyboard'})) : []),
           ...(keycapsData.success ? keycapsData.data.map(item => ({...item, category: 'keycaps'})) : []),
           ...(switchesData.success ? switchesData.data.map(item => ({...item, category: 'switches'})) : []),
           ...(othersData.success ? othersData.data.map(item => ({...item, category: 'others'})) : [])
@@ -79,14 +80,13 @@ const AdminInventory = () => {
 
   // Handle sorting functionality
   const handleSort = (option) => {
-    // Toggle sorting direction if the same option is clicked
     if (sortOption === option) {
       setSortDirection((prevDirection) =>
         prevDirection === "asc" ? "desc" : "asc"
       );
     } else {
       setSortOption(option);
-      setSortDirection("asc"); // Default to ascending when a new option is selected
+      setSortDirection("asc");
     }
 
     const sorted = [...filteredProducts].sort((a, b) => {
@@ -104,6 +104,32 @@ const AdminInventory = () => {
       return 0;
     });
     setFilteredProducts(sorted);
+  };
+
+  // Handle category filtering
+  const handleCategoryFilter = (category) => {
+    setCategoryFilter(category);
+    if (category === 'all') {
+      setFilteredProducts([...keyboards, ...keycaps, ...switches, ...others]);
+    } else {
+      // Standardize category names for comparison
+      const categoryMap = {
+        'keyboards': ['keyboard', 'keyboards'],
+        'keycaps': ['keycap', 'keycaps'],
+        'switches': ['switch', 'switches'],
+        'others': ['other', 'others']
+      };
+
+      const allowedCategories = categoryMap[category.toLowerCase()] || [];
+      
+      const filtered = [...keyboards, ...keycaps, ...switches, ...others].filter(
+        (product) => {
+          const productCategory = product.category?.toLowerCase();
+          return allowedCategories.includes(productCategory);
+        }
+      );
+      setFilteredProducts(filtered);
+    }
   };
 
   // Handle product addition
@@ -243,7 +269,55 @@ const AdminInventory = () => {
           <div className="text-6xl font-bold">Inventory</div>
           <div className="flex items-center gap-x-4">
             <AdminSearchField onSearch={handleSearch} />
-            {/* Dropdown for Sorting */}
+            {/* Category Filter Dropdown */}
+            <div className="relative">
+              <button
+                className="flex items-center bg-white border border-gray-300 rounded-md px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={() =>
+                  document
+                    .getElementById("categoryDropdown")
+                    .classList.toggle("hidden")
+                }
+              >
+                Filter By Category <ChevronDown className="ml-2 w-4 h-4" />
+              </button>
+              <div
+                id="categoryDropdown"
+                className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-lg hidden"
+              >
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleCategoryFilter('all')}
+                >
+                  All Products
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleCategoryFilter('keyboards')}
+                >
+                  Keyboards
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleCategoryFilter('keycaps')}
+                >
+                  Keycaps
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleCategoryFilter('switches')}
+                >
+                  Switches
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleCategoryFilter('others')}
+                >
+                  Others
+                </button>
+              </div>
+            </div>
+            {/* Sort Dropdown */}
             <div className="relative">
               <button
                 className="flex items-center bg-white border border-gray-300 rounded-md px-4 py-2 text-gray-700 hover:bg-gray-100"

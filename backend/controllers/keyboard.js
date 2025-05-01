@@ -160,3 +160,28 @@ export const updateKeyboardSales = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
+export const decrementKeyboardStock = async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid keyboard ID" });
+  }
+
+  try {
+    const keyboard = await Keyboard.findById(id);
+    if (!keyboard) {
+      return res.status(404).json({ success: false, message: "Keyboard not found" });
+    }
+    if (keyboard.quantity < quantity) {
+      return res.status(400).json({ success: false, message: "Not enough stock" });
+    }
+    keyboard.quantity -= quantity;
+    await keyboard.save();
+    res.status(200).json({ success: true, data: keyboard });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};

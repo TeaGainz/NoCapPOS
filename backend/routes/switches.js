@@ -5,6 +5,7 @@ import {
   getSwitchesById,
   getSwitches,
   updateSwitches,
+  decrementSwitchesStock,
 } from "../controllers/switches.js";
 import { updateSwitchesSales } from "../controllers/switches.js";
 
@@ -23,5 +24,7 @@ router.put("/:id", updateSwitches);
 router.delete("/:id", deleteSwitches);
 
 router.patch("/:id/sales", updateSwitchesSales);
+
+router.patch("/:id/decrement", decrementSwitchesStock);
 
 export default router;

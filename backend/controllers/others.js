@@ -32,7 +32,7 @@ export const addOthers = async (req, res) => {
       .json({ success: false, message: "Image size exceeds 2MB." });
   }
 
-  const newothers = new Others(others);
+  const newOthers = new Others(others);
 
   try {
     await newOthers.save();
@@ -156,6 +156,30 @@ export const updateOthersSales = async (req, res) => {
     res.status(200).json({ success: true, data: updatedOthers });
   } catch (error) {
     console.error("Error updating product sales:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const decrementOthersStock = async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid others ID" });
+  }
+
+  try {
+    const others = await Others.findById(id);
+    if (!others) {
+      return res.status(404).json({ success: false, message: "Others not found" });
+    }
+    if (others.quantity < quantity) {
+      return res.status(400).json({ success: false, message: "Not enough stock" });
+    }
+    others.quantity -= quantity;
+    await others.save();
+    res.status(200).json({ success: true, data: others });
+  } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

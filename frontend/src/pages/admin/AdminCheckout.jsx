@@ -11,22 +11,40 @@ const AdminCheckout = () => {
 
   // Fetch products from the API
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAllProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/products");
-        const data = await response.json();
-        if (data.success) {
-          setProducts(data.data);
-          setFilteredProducts(data.data);
-        } else {
-          console.error("Failed to fetch products:", data.message);
-        }
+        // Fetch keyboards
+        const keyboardsResponse = await fetch("http://localhost:5000/api/keyboard");
+        const keyboardsData = await keyboardsResponse.json();
+
+        // Fetch keycaps
+        const keycapsResponse = await fetch("http://localhost:5000/api/keycaps");
+        const keycapsData = await keycapsResponse.json();
+
+        // Fetch switches
+        const switchesResponse = await fetch("http://localhost:5000/api/switches");
+        const switchesData = await switchesResponse.json();
+
+        // Fetch others
+        const othersResponse = await fetch("http://localhost:5000/api/others");
+        const othersData = await othersResponse.json();
+
+        // Combine all products
+        const allProducts = [
+          ...(keyboardsData.success ? keyboardsData.data.map(item => ({...item, category: 'keyboard'})) : []),
+          ...(keycapsData.success ? keycapsData.data.map(item => ({...item, category: 'keycaps'})) : []),
+          ...(switchesData.success ? switchesData.data.map(item => ({...item, category: 'switches'})) : []),
+          ...(othersData.success ? othersData.data.map(item => ({...item, category: 'others'})) : [])
+        ];
+
+        setProducts(allProducts);
+        setFilteredProducts(allProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
 
-    fetchProducts();
+    fetchAllProducts();
   }, []);
 
   // Handle search functionality
@@ -86,6 +104,7 @@ const AdminCheckout = () => {
         name: item.name,
         quantity: 1, // Assuming 1 item per cart entry
         price: item.price,
+        category: item.category, // Add category for stock update
       }));
 
       const totalAmount = calculateTotal();
@@ -109,16 +128,54 @@ const AdminCheckout = () => {
         return;
       }
 
+      // Update stock for each product in the cart
+      for (const item of items) {
+        // Determine endpoint based on category
+        let endpoint = "";
+        if (item.category === "keyboard") endpoint = "keyboard";
+        else if (item.category === "keycaps") endpoint = "keycaps";
+        else if (item.category === "switches") endpoint = "switches";
+        else if (item.category === "others") endpoint = "others";
+        else continue;
+
+        await fetch(`http://localhost:5000/api/${endpoint}/${item.productId}/decrement`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ quantity: item.quantity }),
+        });
+      }
+
       alert("Checkout successful!");
       setCart([]);
 
       // Fetch updated product list to reflect stock changes
-      const response = await fetch("http://localhost:5000/api/products");
-      const data = await response.json();
-      if (data.success) {
-        setProducts(data.data);
-        setFilteredProducts(data.data);
-      }
+      const fetchAllProducts = async () => {
+        try {
+          const keyboardsResponse = await fetch("http://localhost:5000/api/keyboard");
+          const keyboardsData = await keyboardsResponse.json();
+          const keycapsResponse = await fetch("http://localhost:5000/api/keycaps");
+          const keycapsData = await keycapsResponse.json();
+          const switchesResponse = await fetch("http://localhost:5000/api/switches");
+          const switchesData = await switchesResponse.json();
+          const othersResponse = await fetch("http://localhost:5000/api/others");
+          const othersData = await othersResponse.json();
+
+          const allProducts = [
+            ...(keyboardsData.success ? keyboardsData.data.map(item => ({...item, category: 'keyboard'})) : []),
+            ...(keycapsData.success ? keycapsData.data.map(item => ({...item, category: 'keycaps'})) : []),
+            ...(switchesData.success ? switchesData.data.map(item => ({...item, category: 'switches'})) : []),
+            ...(othersData.success ? othersData.data.map(item => ({...item, category: 'others'})) : [])
+          ];
+
+          setProducts(allProducts);
+          setFilteredProducts(allProducts);
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        }
+      };
+      await fetchAllProducts();
     } catch (error) {
       console.error("Error during checkout:", error);
       alert("An error occurred during checkout.");
