@@ -33,8 +33,18 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
       return;
     }
 
-    const finalImage = formData.image || formData.imageLink;
-
+    // Prepare all images
+    const finalFormData = {
+      ...formData,
+      image: formData.image || formData.imageLink,
+      altImage: formData.altImage || "",
+      imageRender1: formData.imageRender1 || "",
+      imageRender2: formData.imageRender2 || "",
+      imageRender3: formData.imageRender3 || "",
+      imageRender4: formData.imageRender4 || "",
+      imageRender5: formData.imageRender5 || "",
+      imageRender6: formData.imageRender6 || "",
+    };
     try {
       // Determine the API endpoint based on the selected category
       const categoryEndpointMap = {
@@ -55,7 +65,7 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...formData, image: finalImage }),
+        body: JSON.stringify(finalFormData),
       });
 
       const data = await response.json();
@@ -1182,19 +1192,19 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files[0];
-                      const MAX_IMAGE_SIZE = 5 * 1920 * 1080; // 2MB in bytes
+                      const MAX_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
 
                       if (file) {
                         if (file.size > MAX_IMAGE_SIZE) {
                           alert(
-                            "Image size exceeds 2MB. Please choose a smaller image."
+                            "Image size exceeds 30MB. Please choose a smaller image."
                           );
                           return;
                         }
 
                         const reader = new FileReader();
                         reader.onload = () => {
-                          setFormData({ ...formData, image: reader.result }); // Save the Base64 image
+                          setFormData({ ...formData, image: reader.result });
                         };
                         reader.readAsDataURL(file);
                       }
@@ -1262,6 +1272,420 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
                   />
                 )}
               </div>
+              <div className="flex flex-col items-center">
+                <label>Alternate Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="altImage/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({ ...formData, altImage: reader.result });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.altImage ? (
+                    <>
+                      <img
+                        src={formData.altImage}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            altImage: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">Change Alt Item Photo</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>1st Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender1/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender1: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender1 ? (
+                    <>
+                      <img
+                        src={formData.imageRender1}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender1: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>2nd Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender2/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender2: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender2 ? (
+                    <>
+                      <img
+                        src={formData.imageRender2}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender2: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>3rd Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender3/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender3: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender3 ? (
+                    <>
+                      <img
+                        src={formData.imageRender3}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender3: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>4th Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender4/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender4: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender4 ? (
+                    <>
+                      <img
+                        src={formData.imageRender4}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender4: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>5th Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender5/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender5: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender5 ? (
+                    <>
+                      <img
+                        src={formData.imageRender5}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender5: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>6th Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender6/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender6: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender6 ? (
+                    <>
+                      <img
+                        src={formData.imageRender6}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender6: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </form>
         </div>
@@ -1272,14 +1696,14 @@ const AdminAddProductPopUp = ({ onClose, onProductAdded }) => {
             <button
               type="button"
               onClick={onClose}
-              className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
+              className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-800 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               form="product-form"
-              className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
+              className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 cursor-pointer"
             >
               Confirm
             </button>

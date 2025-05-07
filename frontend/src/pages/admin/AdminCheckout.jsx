@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Search, ShoppingCart, Trash2, X } from "lucide-react";
+import { Search, ShoppingCart, Trash2, X, ChevronDown, ChevronUp } from "lucide-react";
 import AdminSearchField from "../../components/admin/AdminSearchField";
 
 const AdminCheckout = () => {
@@ -8,6 +8,9 @@ const AdminCheckout = () => {
   const [cart, setCart] = useState([]);
   const [taxRate, setTaxRate] = useState(""); //tax value
   const [rawTaxRate, setRawTaxRate] = useState(""); // Temporary state for raw input
+  const [sortOption, setSortOption] = useState("");
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [categoryFilter, setCategoryFilter] = useState('all');
 
   // Fetch products from the API
   useEffect(() => {
@@ -194,6 +197,58 @@ const AdminCheckout = () => {
     }
   };
 
+  // Add this function for category filtering
+  const handleCategoryFilter = (category) => {
+    setCategoryFilter(category);
+    if (category === 'all') {
+      setFilteredProducts(products);
+    } else {
+      const categoryMap = {
+        'keyboards': ['keyboard', 'keyboards'],
+        'keycaps': ['keycap', 'keycaps'],
+        'switches': ['switch', 'switches'],
+        'others': ['other', 'others']
+      };
+
+      const allowedCategories = categoryMap[category.toLowerCase()] || [];
+      const filtered = products.filter(
+        (product) => {
+          const productCategory = product.category?.toLowerCase();
+          return allowedCategories.includes(productCategory);
+        }
+      );
+      setFilteredProducts(filtered);
+    }
+  };
+
+  // Add this function for sorting
+  const handleSort = (option) => {
+    if (sortOption === option) {
+      setSortDirection((prevDirection) =>
+        prevDirection === "asc" ? "desc" : "asc"
+      );
+    } else {
+      setSortOption(option);
+      setSortDirection("asc");
+    }
+
+    const sorted = [...filteredProducts].sort((a, b) => {
+      if (option === "name") {
+        return sortDirection === "asc"
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      } else if (option === "price") {
+        return sortDirection === "asc" ? a.price - b.price : b.price - a.price;
+      } else if (option === "quantity") {
+        return sortDirection === "asc"
+          ? a.quantity - b.quantity
+          : b.quantity - a.quantity;
+      }
+      return 0;
+    });
+    setFilteredProducts(sorted);
+  };
+
   return (
     <div className="flex flex-col lg:flex-row h-screen">
       {/* Product List */}
@@ -201,7 +256,111 @@ const AdminCheckout = () => {
         <div className="w-full px-4 md:px-6">
           <div className="text-2xl md:text-3xl lg:text-5xl font-bold">Checkout</div>
           <div className="h-4"></div>
-          <AdminSearchField onSearch={handleSearch} />
+          <div className="flex flex-col md:flex-row gap-4">
+            <AdminSearchField onSearch={handleSearch} />
+            {/* Category Filter Dropdown */}
+            <div className="relative">
+              <button
+                className="flex items-center bg-white border border-gray-300 rounded-md px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={() =>
+                  document
+                    .getElementById("categoryDropdown")
+                    .classList.toggle("hidden")
+                }
+              >
+                Filter By Category <ChevronDown className="ml-2 w-4 h-4" />
+              </button>
+              <div
+                id="categoryDropdown"
+                className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-lg hidden z-10"
+              >
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleCategoryFilter('all')}
+                >
+                  All Products
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleCategoryFilter('keyboards')}
+                >
+                  Keyboards
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleCategoryFilter('keycaps')}
+                >
+                  Keycaps
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleCategoryFilter('switches')}
+                >
+                  Switches
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => handleCategoryFilter('others')}
+                >
+                  Others
+                </button>
+              </div>
+            </div>
+            {/* Sort Dropdown */}
+            <div className="relative">
+              <button
+                className="flex items-center bg-white border border-gray-300 rounded-md px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={() =>
+                  document
+                    .getElementById("sortDropdown")
+                    .classList.toggle("hidden")
+                }
+              >
+                Sort By <ChevronDown className="ml-2 w-4 h-4" />
+              </button>
+              <div
+                id="sortDropdown"
+                className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-lg hidden z-10"
+              >
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+                  onClick={() => handleSort("name")}
+                >
+                  Name
+                  {sortOption === "name" &&
+                    (sortDirection === "asc" ? (
+                      <ChevronUp className="w-4 h-4 text-gray-500" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                    ))}
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+                  onClick={() => handleSort("price")}
+                >
+                  Price
+                  {sortOption === "price" &&
+                    (sortDirection === "asc" ? (
+                      <ChevronUp className="w-4 h-4 text-gray-500" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                    ))}
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+                  onClick={() => handleSort("quantity")}
+                >
+                  Quantity
+                  {sortOption === "quantity" &&
+                    (sortDirection === "asc" ? (
+                      <ChevronUp className="w-4 h-4 text-gray-500" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                    ))}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="w-full px-4 md:px-6">
           {filteredProducts.map((product) => (

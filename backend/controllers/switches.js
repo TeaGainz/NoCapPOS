@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import Switches from "../models/products/switches.js";
 
-
 // Helper function to calculate Base64 image size
 const getBase64Size = (base64String) => {
   const padding = (base64String.match(/=/g) || []).length;
@@ -12,39 +11,39 @@ const getBase64Size = (base64String) => {
 export const addSwitches = async (req, res) => {
   const switches = req.body;
 
-  if (
-    !switches.brand ||
-    !switches.name ||
-    !switches.description ||
-    !switches.releaseYear ||
-    !switches.switchType ||
-    !switches.isFactoryLubed ||
-    !switches.switchProfile ||
-    !switches.actuationForce ||
-    !switches.bottomOutForce ||
-    !switches.preTravel ||
-    !switches.totalTravel ||
-    !switches.pins ||
-    !switches.isHallEffect ||
-    !switches.topHousingMaterial ||
-    !switches.bottomHousingMaterial ||
-    !switches.stemMaterial ||
-    !switches.springs ||
-    !switches.isLongPole ||
-    !switches.price ||
-    !switches.quantity ||
-    !switches.image ||
-    !switches.category
-  ) {
-    return res.status(400).json({ message: "Certain Fields are required" });
+  // Required field validation
+  if (!switches.brand || !switches.name || !switches.description || 
+      !switches.price || !switches.quantity || !switches.category) {
+    return res.status(400).json({ message: "Basic fields are required" });
   }
 
-  // Validate Base64 image size (e.g., limit to 2MB)
-  const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
-  if (getBase64Size(switches.image) > MAX_IMAGE_SIZE) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Image size exceeds 2MB." });
+  const MAX_IMAGE_SIZE = 15 * 1920 * 1080; // ~30MB in bytes
+
+  // Helper function to validate image size
+  const validateImage = (imageData) => {
+    if (!imageData) return true; // Skip validation if no image
+    return getBase64Size(imageData) <= MAX_IMAGE_SIZE;
+  };
+
+  // Validate all images
+  const imageValidations = [
+    { field: 'image', data: switches.image },
+    { field: 'altImage', data: switches.altImage },
+    { field: 'imageRender1', data: switches.imageRender1 },
+    { field: 'imageRender2', data: switches.imageRender2 },
+    { field: 'imageRender3', data: switches.imageRender3 },
+    { field: 'imageRender4', data: switches.imageRender4 },
+    { field: 'imageRender5', data: switches.imageRender5 },
+    { field: 'imageRender6', data: switches.imageRender6 }
+  ];
+
+  for (const validation of imageValidations) {
+    if (validation.data && !validateImage(validation.data)) {
+      return res.status(400).json({
+        success: false,
+        message: `${validation.field} size exceeds 30MB.`
+      });
+    }
   }
 
   const newSwitches = new Switches(switches);
@@ -93,23 +92,36 @@ export const updateSwitches = async (req, res) => {
   const switches = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid switches ID" });
+    return res.status(400).json({ success: false, message: "Invalid switches ID" });
   }
 
-  // Validate Base64 image size (e.g., limit to 2MB)
-  const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
-  const getBase64Size = (base64String) => {
-    const padding = (base64String.match(/=/g) || []).length;
-    const sizeInBytes = (base64String.length * 3) / 4 - padding;
-    return sizeInBytes;
+  const MAX_IMAGE_SIZE = 15 * 1920 * 1080;
+
+  // Helper function to validate image size
+  const validateImage = (imageData) => {
+    if (!imageData) return true; // Skip validation if no image
+    return getBase64Size(imageData) <= MAX_IMAGE_SIZE;
   };
 
-  if (switches.image && getBase64Size(switches.image) > MAX_IMAGE_SIZE) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Image size exceeds 2MB." });
+  // Validate all images
+  const imageValidations = [
+    { field: 'image', data: switches.image },
+    { field: 'altImage', data: switches.altImage },
+    { field: 'imageRender1', data: switches.imageRender1 },
+    { field: 'imageRender2', data: switches.imageRender2 },
+    { field: 'imageRender3', data: switches.imageRender3 },
+    { field: 'imageRender4', data: switches.imageRender4 },
+    { field: 'imageRender5', data: switches.imageRender5 },
+    { field: 'imageRender6', data: switches.imageRender6 }
+  ];
+
+  for (const validation of imageValidations) {
+    if (validation.data && !validateImage(validation.data)) {
+      return res.status(400).json({
+        success: false,
+        message: `${validation.field} size exceeds 30MB.`
+      });
+    }
   }
 
   try {
@@ -117,9 +129,7 @@ export const updateSwitches = async (req, res) => {
       new: true,
     });
     if (!updatedSwitches) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Switches not found" });
+      return res.status(404).json({ success: false, message: "Switches not found" });
     }
     res.status(200).json({ success: true, data: updatedSwitches });
   } catch (error) {
@@ -180,16 +190,22 @@ export const decrementSwitchesStock = async (req, res) => {
   const { quantity } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ success: false, message: "Invalid switches ID" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid switches ID" });
   }
 
   try {
     const switches = await Switches.findById(id);
     if (!switches) {
-      return res.status(404).json({ success: false, message: "Switches not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Switches not found" });
     }
     if (switches.quantity < quantity) {
-      return res.status(400).json({ success: false, message: "Not enough stock" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Not enough stock" });
     }
     switches.quantity -= quantity;
     await switches.save();

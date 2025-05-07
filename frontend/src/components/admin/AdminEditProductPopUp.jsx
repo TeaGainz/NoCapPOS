@@ -22,11 +22,11 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    const MAX_IMAGE_SIZE = 5 * 1920 * 1080; // 2MB in bytes
+    const MAX_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
 
     if (file) {
       if (file.size > MAX_IMAGE_SIZE) {
-        alert("Image size exceeds 2MB. Please choose a smaller image.");
+        alert("Image size exceeds 30MB. Please choose a smaller image.");
         return;
       }
 
@@ -44,7 +44,6 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
     // Validation for price and quantity
     if (Number(formData.price) < 0) {
       alert("Price cannot be negative.");
@@ -54,8 +53,19 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
       alert("Quantity cannot be negative.");
       return;
     }
-    
-    const finalImage = formData.image || formData.imageLink;
+
+    // Prepare all images
+    const finalFormData = {
+      ...formData,
+      image: formData.image || formData.imageLink,
+      altImage: formData.altImage || "",
+      imageRender1: formData.imageRender1 || "",
+      imageRender2: formData.imageRender2 || "",
+      imageRender3: formData.imageRender3 || "",
+      imageRender4: formData.imageRender4 || "",
+      imageRender5: formData.imageRender5 || "",
+      imageRender6: formData.imageRender6 || "",
+    };
 
     try {
       const categoryEndpointMap = {
@@ -78,7 +88,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...formData, image: finalImage }),
+          body: JSON.stringify(finalFormData),
         }
       );
 
@@ -88,7 +98,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
         onProductUpdated(data.data);
         onClose();
       } else {
-        alert("Failed to update product: " + data.message);
+        throw new Error(data.message || "Failed to update product");
       }
     } catch (error) {
       console.error("Error updating product:", error);
@@ -109,12 +119,13 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
             <div>
               <label className="block font-bold mb-1">Year Released:</label>
               <input
-                type="text"
+                type="text" // Changed from "text" to "date"
                 name="releaseYear"
                 placeholder="YYYY"
                 value={formData.releaseYear || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               />
             </div>
             <div>
@@ -126,6 +137,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.dimensions || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               />
             </div>
             <div>
@@ -135,6 +147,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.switchOptions || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Switch Option --</option>
                 <option value="Linear">Linear</option>
@@ -152,6 +165,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.layoutSize || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Layout Size --</option>
                 <option value="100%">100%</option>
@@ -179,6 +193,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 <option value="Other">Other</option>
               </select>
             </div>
+            {/* Add other keyboard-specific fields here */}
             <div>
               <label className="block font-bold mb-1">Keyboard Profile:</label>
               <select
@@ -186,6 +201,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.profile || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Profile --</option>
                 <option value="Normal Profile">Normal Profile</option>
@@ -200,6 +216,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.layoutStandard || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Layout Standard --</option>
                 <option value="ANSI">ANSI</option>
@@ -221,6 +238,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.layoutErgonomics || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Layout Ergonomics --</option>
                 <option value="Normal">Normal</option>
@@ -240,6 +258,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.connectivity || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Connectivity Options--</option>
                 <option value="Wired only">Wired only</option>
@@ -255,6 +274,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.pollingRate || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Max Polling Rate --</option>
                 <option value="32000 Hz">32000 Hz</option>
@@ -273,6 +293,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.mountType || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Mount Type --</option>
                 <option value="Top Mount">Top Mount</option>
@@ -285,6 +306,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 <option value="No Info">No Info</option>
               </select>
             </div>
+
             <div>
               <label className="block font-bold mb-1">Case Color:</label>
               <select
@@ -292,6 +314,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.caseColors || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Case Color --</option>
                 <option value="Black">Black</option>
@@ -316,6 +339,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.caseMaterial || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Case Material --</option>
                 <option value="Plastic">Plastic</option>
@@ -335,6 +359,57 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 <option value="No Info">No Info</option>
               </select>
             </div>
+
+            <div className="mb-4">
+              <label htmlFor="batteryCapacity" className="block font-bold mb-1">
+                Battery Capacity:{" "}
+                <span className="text-blue-600">
+                  {formData.batteryCapacity ?? 0} mAh
+                </span>
+              </label>
+              <input
+                type="range"
+                id="batteryCapacity"
+                name="batteryCapacity"
+                min="0"
+                max="20000"
+                step="1"
+                value={formData.batteryCapacity ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    batteryCapacity: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="weight" className="block font-bold mb-1">
+                Weight:{" "}
+                <span className="text-blue-600">{formData.weight ?? 0} g</span>
+              </label>
+              <input
+                type="range"
+                id="weight"
+                name="weight"
+                min="0"
+                max="6000"
+                step="1"
+                value={formData.weight ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    weight: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
+              />
+            </div>
             <div>
               <label className="block font-bold mb-1">Keycap Material:</label>
               <select
@@ -342,6 +417,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.keycapMaterial || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Keycap Material --</option>
                 <option value="PBT">PBT</option>
@@ -355,7 +431,221 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 <option value="No Info">No Info</option>
               </select>
             </div>
-            {/* Add all other keyboard-specific fields from AdminAddProductPopUp here as needed */}
+            <div>
+              <label className="block font-bold mb-1">Knob Support:</label>
+              <select
+                name="knobSupport"
+                value={formData.knobSupport || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Knob Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">Display Support:</label>
+              <select
+                name="displaySupport"
+                value={formData.displaySupport || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Display Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">Hot Swappability:</label>
+              <select
+                name="isHotSwappable"
+                value={formData.isHotSwappable || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Hot Swappability --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">Backlight:</label>
+              <select
+                name="backlight"
+                value={formData.backlight || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Backlight --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">Multi Media Keys:</label>
+              <select
+                name="multiMediaKeys"
+                value={formData.multiMediaKeys || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Multi Media Keys --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">Win/Mac Support:</label>
+              <select
+                name="winmacSupport"
+                value={formData.winmacSupport || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Win/Mac Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">USB C Support:</label>
+              <select
+                name="usb_C"
+                value={formData.usb_C || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select USB C Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">
+                Hall Effect Support:
+              </label>
+              <select
+                name="hallEffectSupport"
+                value={formData.hallEffectSupport || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Hall Effect Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">QMK Support:</label>
+              <select
+                name="qmkSupport"
+                value={formData.qmkSupport || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select QMK Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">VIA Support:</label>
+              <select
+                name="viaSupport"
+                value={formData.viaSupport || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select VIA Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">
+                N-Key Rollover Support:
+              </label>
+              <select
+                name="nkeyRollover"
+                value={formData.nkeyRollover || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select N-Key Rollover Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">
+                Screw-in Stabilizers Support:
+              </label>
+              <select
+                name="screwInStabilizers"
+                value={formData.screwInStabilizers || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select N-Key Rollover Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">
+                Sound Dampening Support:
+              </label>
+              <select
+                name="soundDampening"
+                value={formData.soundDampening || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Sound Dampening Support --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
           </>
         );
       case "Switches":
@@ -374,6 +664,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.releaseYear || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               />
             </div>
             <div>
@@ -383,6 +674,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.switchType || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Switch Type --</option>
                 <option value="Linear">Linear</option>
@@ -398,6 +690,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.stemMaterial || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Stem Material --</option>
                 <option value="POM">POM</option>
@@ -422,6 +715,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.topHousingMaterial || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Top Housing Material --</option>
                 <option value="POM">POM</option>
@@ -446,6 +740,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.bottomHousingMaterial || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Bottom Housing Material --</option>
                 <option value="POM">POM</option>
@@ -469,6 +764,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.springs || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Spring Type --</option>
                 <option value="Standard">Standard</option>
@@ -484,6 +780,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.pins || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Number of Pins --</option>
                 <option value="5-Pin">5-Pin</option>
@@ -498,6 +795,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.switchProfile || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Switch Profile--</option>
                 <option value="Normal">Normal</option>
@@ -514,6 +812,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.isFactoryLubed || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Factory Lubed Status --</option>
                 <option value="Yes">Yes</option>
@@ -522,12 +821,15 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
               </select>
             </div>
             <div>
-              <label className="block font-bold mb-1">Is the switch Hall Effect:?</label>
+              <label className="block font-bold mb-1">
+                Is the switch Hall Effect:?
+              </label>
               <select
                 name="isHallEffect"
                 value={formData.isHallEffect || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Hall Effect Support --</option>
                 <option value="Yes">Yes</option>
@@ -536,12 +838,15 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
               </select>
             </div>
             <div>
-              <label className="block font-bold mb-1">Is the switch Long Pole?:</label>
+              <label className="block font-bold mb-1">
+                Is the switch Long Pole?:
+              </label>
               <select
                 name="isLongPole"
                 value={formData.isLongPole || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Whether Long Pole --</option>
                 <option value="Yes">Yes</option>
@@ -549,7 +854,110 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 <option value="No Info">No Info</option>
               </select>
             </div>
-            {/* Add all other switches-specific fields from AdminAddProductPopUp here as needed */}
+            <div className="mb-4">
+              <label htmlFor="actuationForce" className="block font-bold mb-1">
+                Actuation Force:{" "}
+                <span className="text-blue-600">
+                  {formData.actuationForce ?? 0} g
+                </span>
+              </label>
+              <input
+                type="range"
+                id="actuationForce"
+                name="actuationForce"
+                min="0"
+                max="100"
+                step="1"
+                value={formData.actuationForce ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    actuationForce: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="bottomOutForce" className="block font-bold mb-1">
+                Bottom out Force:{" "}
+                <span className="text-blue-600">
+                  {formData.bottomOutForce ?? 0} g
+                </span>
+              </label>
+              <input
+                type="range"
+                id="bottomOutForce"
+                name="bottomOutForce"
+                min="0"
+                max="500"
+                step="1"
+                value={formData.bottomOutForce ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    bottomOutForce: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="preTravel" className="block font-bold mb-1">
+                Pre-Travel:{" "}
+                <span className="text-blue-600">
+                  {formData.preTravel ?? 0} mm
+                </span>
+              </label>
+              <input
+                type="range"
+                id="preTravel"
+                name="preTravel"
+                min="0"
+                max="4"
+                step=".01"
+                value={formData.preTravel ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    preTravel: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="totalTravel" className="block font-bold mb-1">
+                Total Travel:{" "}
+                <span className="text-blue-600">
+                  {formData.totalTravel ?? 0} mm
+                </span>
+              </label>
+              <input
+                type="range"
+                id="totalTravel"
+                name="totalTravel"
+                min="0"
+                max="4.5"
+                step=".01"
+                value={formData.totalTravel ?? 0}
+                onChange={(e) => {
+                  // parse to number so you don't end up with a string
+                  const val = Number(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    totalTravel: val,
+                  }));
+                }}
+                className="w-full h-2 bg-gray-200 rounded-lg accent-blue-500 cursor-pointer"
+              />
+            </div>
           </>
         );
       case "Keycaps":
@@ -577,6 +985,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.profile || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Keycap Profile--</option>
                 <option value="Cherry">Cherry</option>
@@ -606,6 +1015,7 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 value={formData.material || ""}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
+                required="false"
               >
                 <option value="">-- Select Keycap Material --</option>
                 <option value="PBT">PBT</option>
@@ -619,7 +1029,68 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                 <option value="No Info">No Info</option>
               </select>
             </div>
-            {/* Add all other keycaps-specific fields from AdminAddProductPopUp here as needed */}
+            <div>
+              <label className="block font-bold mb-1">Layout Standard:</label>
+              <select
+                name="layoutStandard"
+                value={formData.layoutStandard || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Layout Standard --</option>
+                <option value="ANSI">ANSI</option>
+                <option value="ISO">ISO</option>
+                <option value="ISO DE">ISO DE</option>
+                <option value="ISO UK">ISO UK</option>
+                <option value="ISO ES">ISO ES</option>
+                <option value="ISO NOR">ISO NOR</option>
+                <option value="ISO Nordic">ISO Nordic</option>
+                <option value="ISO FR">ISO FR</option>
+                <option value="JIS">JIS</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold mb-1">Sub-Legends:</label>
+              <select
+                name="subLegends"
+                value={formData.subLegends || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select Sub-Legends --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Hiragana">Hiragana</option>
+                <option value="Katakana">Katakana</option>
+                <option value="Kanji">Kanji</option>
+                <option value="Hangul">Hangul</option>
+                <option value="Cyrillic">Cyrillic</option>
+                <option value="Zhuyin">Zhuyin</option>
+                <option value="Cangjie">Cangjie</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-bold mb-1">RGB Shine Through:</label>
+              <select
+                name="rgbShineThrough"
+                value={formData.rgbShineThrough || ""}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                required="false"
+              >
+                <option value="">-- Select RGB Shine Through --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="No Info">No Info</option>
+              </select>
+            </div>
+            {/* Add other keycaps-specific fields here */}
           </>
         );
       case "Others":
@@ -759,7 +1230,11 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                         type="button"
                         className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
                         onClick={() =>
-                          setFormData((prev) => ({ ...prev, image: "", imageLink: "" }))
+                          setFormData((prev) => ({
+                            ...prev,
+                            image: "",
+                            imageLink: "",
+                          }))
                         }
                       >
                         Remove
@@ -804,6 +1279,421 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
                   />
                 )}
               </div>
+
+              <div className="flex flex-col items-center">
+                <label>Alternate Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="altImage/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_ALT_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_ALT_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({ ...formData, altImage: reader.result });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.altImage ? (
+                    <>
+                      <img
+                        src={formData.altImage}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            altImage: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">Change Alt Item Photo</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>1st Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender1/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_R1_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_R1_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender1: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender1 ? (
+                    <>
+                      <img
+                        src={formData.imageRender1}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender1: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>2nd Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender2/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_R2_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_R2_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender2: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender2 ? (
+                    <>
+                      <img
+                        src={formData.imageRender2}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender2: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>3rd Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender3/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_R3_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_R3_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender3: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender3 ? (
+                    <>
+                      <img
+                        src={formData.imageRender3}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender3: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>4th Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender4/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_R4_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_R4_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender4: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender4 ? (
+                    <>
+                      <img
+                        src={formData.imageRender4}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender4: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>5th Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender5/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_R5_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_R5_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender5: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender5 ? (
+                    <>
+                      <img
+                        src={formData.imageRender5}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender5: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <label>6th Render Image</label>
+                <div className="w-32 h-32 bg-gray-200 rounded-lg flex justify-center items-center relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="imageRender6/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      const MAX_R6_IMAGE_SIZE = 15 * 1920 * 1080; // Increased to ~30MB
+
+                      if (file) {
+                        if (file.size > MAX_R6_IMAGE_SIZE) {
+                          alert(
+                            "Image size exceeds 30MB. Please choose a smaller image."
+                          );
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({
+                            ...formData,
+                            imageRender6: reader.result,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {/* Image Preview */}
+                  {formData.imageRender6 ? (
+                    <>
+                      <img
+                        src={formData.imageRender6}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            imageRender6: "",
+                            imageLink: "",
+                          }))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-gray-500">
+                      Change Render Item Photo
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </form>
         </div>
@@ -814,14 +1704,14 @@ const AdminEditProductPopUp = ({ product, onClose, onProductUpdated }) => {
             <button
               type="button"
               onClick={onClose}
-              className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
+              className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-800 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               form="product-form"
-              className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
+              className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 cursor-pointer"
             >
               Confirm
             </button>
